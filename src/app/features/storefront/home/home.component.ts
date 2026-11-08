@@ -218,7 +218,7 @@ interface ShowcaseTab {
     <section class="section-block container">
       <div class="duo-banners">
         <div class="promo-card ngx-spotlight-card">
-          <om-border-beam [gradientColorStart]="'#e8decb'" [gradientColorEnd]="'#9a6b32'" [animationDuration]="'9s'"></om-border-beam>
+          <om-border-beam [gradientColorStart]="'#cbd5e1'" [gradientColorEnd]="'#d97706'" [animationDuration]="'9s'"></om-border-beam>
           <img src="/uploads/products/prod-panjabi-1.svg" alt="Heritage Panjabi Atelier" loading="lazy" />
           <div class="promo-overlay">
             <span class="promo-tag">
@@ -233,7 +233,7 @@ interface ShowcaseTab {
         </div>
 
         <div class="promo-card ngx-spotlight-card">
-          <om-border-beam [gradientColorStart]="'#e8decb'" [gradientColorEnd]="'#9a6b32'" [animationDuration]="'9s'"></om-border-beam>
+          <om-border-beam [gradientColorStart]="'#cbd5e1'" [gradientColorEnd]="'#d97706'" [animationDuration]="'9s'"></om-border-beam>
           <img src="/uploads/products/prod-overshirt-1.svg" alt="Structured Outerwear & Linen" loading="lazy" />
           <div class="promo-overlay">
             <span class="promo-tag">
@@ -470,8 +470,8 @@ interface ShowcaseTab {
 
     /* Trust Strip with NgxUI Marquee */
     .trust-strip {
-      background: linear-gradient(90deg, #f3ede2 0%, #ede3d2 50%, #f3ede2 100%);
-      border-bottom: 1px solid var(--color-border-dark);
+      background: linear-gradient(90deg, var(--color-alabaster) 0%, var(--color-beige) 50%, var(--color-alabaster) 100%);
+      border-bottom: 1px solid var(--color-border);
       padding: 0.95rem 0;
       overflow: hidden;
     }
@@ -666,7 +666,7 @@ interface ShowcaseTab {
     }
     .skeleton-card {
       aspect-ratio: 3 / 4;
-      background: linear-gradient(90deg, #f3ede2 25%, #e8decb 50%, #f3ede2 75%);
+      background: linear-gradient(90deg, var(--color-alabaster) 25%, var(--color-beige) 50%, var(--color-alabaster) 75%);
       background-size: 200% 100%;
       border-radius: var(--radius-sm);
       animation: shimmerWave 1.5s infinite linear;

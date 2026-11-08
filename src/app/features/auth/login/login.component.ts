@@ -152,9 +152,9 @@ import { ToastService } from '../../../core/services/toast.service';
       }
     }
     .error-banner {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: #b91c1c;
+      background: var(--color-berry-bg, #fff1f2);
+      border: 1px solid rgba(225, 29, 72, 0.25);
+      color: var(--color-berry, #e11d48);
       border-radius: var(--radius-sm);
       padding: 0.75rem 0.9rem;
       font-size: 0.82rem;

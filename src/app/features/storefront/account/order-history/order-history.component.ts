@@ -320,7 +320,7 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
       font-size: 0.7rem;
       font-weight: 700;
       letter-spacing: 0.16em;
-      color: var(--color-gold, #996515);
+      color: var(--color-gold, #d97706);
       display: block;
       margin-bottom: 0.25rem;
     }
@@ -336,27 +336,27 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
         font-size: 0.8rem;
         font-weight: 600;
         text-decoration: none;
-        background: var(--color-alabaster, #f9f9f9);
-        border: 1px solid var(--color-border, #e5e5e5);
-        color: var(--color-text, #333);
+        background: var(--color-alabaster, #f1f5f9);
+        border: 1px solid var(--color-border, #e2e8f0);
+        color: var(--color-text, #0f172a);
         transition: all 0.2s ease;
 
         &.active, &:hover {
-          background: var(--color-onyx, #121212);
-          color: var(--color-white, #fff);
-          border-color: var(--color-onyx, #121212);
+          background: var(--color-onyx, #18181b);
+          color: var(--color-white, #ffffff);
+          border-color: var(--color-onyx, #18181b);
         }
 
         &.pill-logout {
-          color: var(--color-berry, #be123c);
-          border-color: rgba(190, 18, 60, 0.3);
-          background: #fff1f2;
+          color: var(--color-berry, #e11d48);
+          border-color: rgba(225, 29, 72, 0.3);
+          background: var(--color-berry-bg, #fff1f2);
           cursor: pointer;
 
           &:hover {
-            background: var(--color-berry, #be123c);
-            color: var(--color-white, #fff);
-            border-color: var(--color-berry, #be123c);
+            background: var(--color-berry, #e11d48);
+            color: var(--color-white, #ffffff);
+            border-color: var(--color-berry, #e11d48);
           }
         }
       }
@@ -365,8 +365,8 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
     .state-card {
       padding: 3.5rem 1.5rem;
       text-align: center;
-      background: var(--color-alabaster, #fbfbfb);
-      border: 1px solid var(--color-border, #e5e5e5);
+      background: var(--color-alabaster, #f1f5f9);
+      border: 1px solid var(--color-border, #e2e8f0);
       border-radius: var(--radius-sm, 2px);
 
       &.empty-box {
@@ -376,7 +376,7 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
         gap: 0.75rem;
       }
       .empty-icon {
-        color: var(--color-text-muted, #888);
+        color: var(--color-text-muted, #64748b);
         margin-bottom: 0.5rem;
       }
     }
@@ -388,14 +388,14 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
     }
 
     .order-card {
-      background: var(--color-white, #fff);
-      border: 1px solid var(--color-border, #e5e5e5);
+      background: var(--color-white, #ffffff);
+      border: 1px solid var(--color-border, #e2e8f0);
       border-radius: var(--radius-sm, 2px);
       transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
       &.expanded {
-        border-color: var(--color-onyx, #121212);
-        box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        border-color: var(--color-onyx, #18181b);
+        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
       }
     }
 
@@ -417,7 +417,7 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
       font-weight: 700;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--color-text-muted, #767676);
+      color: var(--color-text-muted, #64748b);
       margin-bottom: 0.2rem;
     }
 
@@ -429,13 +429,13 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
     .order-date {
       display: block;
       font-size: 0.75rem;
-      color: var(--color-text-muted, #767676);
+      color: var(--color-text-muted, #64748b);
     }
 
     .sub-fee {
       display: block;
       font-size: 0.72rem;
-      color: var(--color-text-muted, #767676);
+      color: var(--color-text-muted, #64748b);
     }
 
     .col-actions {
@@ -453,18 +453,18 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
       letter-spacing: 0.05em;
       text-transform: uppercase;
 
-      &.badge-pending { background: #fff3cd; color: #856404; }
-      &.badge-confirmed { background: #d1ecf1; color: #0c5460; }
-      &.badge-shipped { background: #cce5ff; color: #004085; }
-      &.badge-delivered { background: #d4edda; color: #155724; }
-      &.badge-cancelled { background: #f8d7da; color: #721c24; }
-      &.badge-unpaid { background: #fff3cd; color: #856404; }
-      &.badge-paid { background: #d4edda; color: #155724; }
+      &.badge-pending { background: var(--color-gold-bg, #fffbeb); color: var(--color-gold, #d97706); }
+      &.badge-confirmed { background: var(--color-blue-bg, #eff6ff); color: var(--color-blue, #2563eb); }
+      &.badge-shipped { background: var(--color-blue-bg, #eff6ff); color: var(--color-blue, #2563eb); }
+      &.badge-delivered { background: var(--color-emerald-bg, #ecfdf5); color: var(--color-emerald, #059669); }
+      &.badge-cancelled { background: var(--color-berry-bg, #fff1f2); color: var(--color-berry, #e11d48); }
+      &.badge-unpaid { background: var(--color-gold-bg, #fffbeb); color: var(--color-gold, #d97706); }
+      &.badge-paid { background: var(--color-emerald-bg, #ecfdf5); color: var(--color-emerald, #059669); }
     }
 
     .order-details-drawer {
-      border-top: 1px solid var(--color-border, #e5e5e5);
-      background: var(--color-alabaster, #fcfcfc);
+      border-top: 1px solid var(--color-border, #e2e8f0);
+      background: var(--color-alabaster, #f1f5f9);
       padding: 1.5rem;
     }
 
@@ -480,8 +480,8 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
     }
 
     .info-block {
-      background: var(--color-white, #fff);
-      border: 1px solid var(--color-border, #e5e5e5);
+      background: var(--color-white, #ffffff);
+      border: 1px solid var(--color-border, #e2e8f0);
       padding: 1.25rem;
       border-radius: 2px;
 
@@ -491,7 +491,7 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
         letter-spacing: 0.08em;
         margin-bottom: 0.75rem;
         padding-bottom: 0.5rem;
-        border-bottom: 1px solid var(--color-border, #eee);
+        border-bottom: 1px solid var(--color-border, #e2e8f0);
       }
       p { margin: 0 0 0.35rem 0; font-size: 0.85rem; }
     }
@@ -499,8 +499,8 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
     .courier-badge {
       margin-top: 0.75rem;
       padding: 0.5rem 0.75rem;
-      background: #eef2ff;
-      border: 1px solid #c7d2fe;
+      background: var(--color-blue-bg, #eff6ff);
+      border: 1px solid rgba(37, 99, 235, 0.25);
       border-radius: 2px;
       font-size: 0.78rem;
       display: flex;
@@ -515,9 +515,9 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
         font-size: 0.85rem;
         margin-bottom: 0.4rem;
 
-        &.discount { color: #b91c1c; }
+        &.discount { color: var(--color-berry, #e11d48); }
         &.grand-total {
-          border-top: 1px solid var(--color-border, #eee);
+          border-top: 1px solid var(--color-border, #e2e8f0);
           padding-top: 0.5rem;
           margin-top: 0.5rem;
           font-size: 0.95rem;
@@ -526,8 +526,8 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
     }
 
     .line-items-wrapper {
-      background: var(--color-white, #fff);
-      border: 1px solid var(--color-border, #e5e5e5);
+      background: var(--color-white, #ffffff);
+      border: 1px solid var(--color-border, #e2e8f0);
       padding: 1.25rem;
       border-radius: 2px;
 
@@ -551,16 +551,16 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
       th {
         text-align: left;
         padding: 0.6rem 0.75rem;
-        border-bottom: 1px solid var(--color-border, #e5e5e5);
+        border-bottom: 1px solid var(--color-border, #e2e8f0);
         font-size: 0.7rem;
         text-transform: uppercase;
         letter-spacing: 0.06em;
-        color: var(--color-text-muted, #767676);
+        color: var(--color-text-muted, #64748b);
       }
 
       td {
         padding: 0.75rem;
-        border-bottom: 1px solid var(--color-border, #f0f0f0);
+        border-bottom: 1px solid var(--color-border, #e2e8f0);
         vertical-align: middle;
       }
 
@@ -575,7 +575,7 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
         height: 56px;
         object-fit: cover;
         border-radius: 2px;
-        border: 1px solid var(--color-border, #eee);
+        border: 1px solid var(--color-border, #e2e8f0);
       }
 
       .product-title {
@@ -585,14 +585,14 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
 
       .view-item-link {
         font-size: 0.72rem;
-        color: var(--color-text-muted, #767676);
+        color: var(--color-text-muted, #64748b);
         text-decoration: underline;
       }
 
       .size-pill, .color-badge {
         display: inline-block;
         padding: 0.15rem 0.45rem;
-        background: #f3f4f6;
+        background: var(--color-alabaster, #f1f5f9);
         border-radius: 2px;
         font-weight: 600;
         font-size: 0.75rem;
@@ -600,7 +600,7 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
 
       .sku-tag {
         font-size: 0.75rem;
-        background: #f1f5f9;
+        background: var(--color-alabaster, #f1f5f9);
         padding: 0.15rem 0.35rem;
         border-radius: 2px;
       }
@@ -608,15 +608,15 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
 
     .btn-danger-outline {
       background: transparent;
-      border: 1px solid #ef4444;
-      color: #ef4444;
-      &:hover { background: #ef4444; color: #fff; }
+      border: 1px solid var(--color-berry, #e11d48);
+      color: var(--color-berry, #e11d48);
+      &:hover { background: var(--color-berry, #e11d48); color: var(--color-white, #ffffff); }
     }
 
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.55);
+      background: rgba(24, 24, 27, 0.55);
       z-index: 1050;
       display: flex;
       align-items: center;
@@ -625,11 +625,11 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
     }
 
     .modal-card {
-      background: var(--color-white, #fff);
+      background: var(--color-white, #ffffff);
       width: 100%;
       max-width: 480px;
       border-radius: 2px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
       overflow: hidden;
     }
 
@@ -638,7 +638,7 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
       justify-content: space-between;
       align-items: center;
       padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--color-border, #e5e5e5);
+      border-bottom: 1px solid var(--color-border, #e2e8f0);
 
       h3 { font-size: 0.9rem; margin: 0; letter-spacing: 0.06em; }
       .close-btn {
@@ -652,7 +652,7 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
 
     .modal-body {
       padding: 1.25rem;
-      p { font-size: 0.85rem; margin-bottom: 1rem; color: var(--color-text-muted, #555); }
+      p { font-size: 0.85rem; margin-bottom: 1rem; color: var(--color-text-muted, #64748b); }
     }
 
     .modal-footer {
@@ -660,8 +660,8 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
       justify-content: flex-end;
       gap: 0.5rem;
       padding: 0.75rem 1.25rem;
-      border-top: 1px solid var(--color-border, #e5e5e5);
-      background: var(--color-alabaster, #f9f9f9);
+      border-top: 1px solid var(--color-border, #e2e8f0);
+      background: var(--color-alabaster, #f1f5f9);
     }
   `],
 })

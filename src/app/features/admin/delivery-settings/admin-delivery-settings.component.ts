@@ -310,7 +310,7 @@ import { BdtCurrencyPipe } from '../../../shared/pipes/bdt.pipe';
       font-size: 0.85rem;
     }
     .statutory-card {
-      background: #fafaf9;
+      background: var(--color-alabaster, #f1f5f9);
       border-left: 3px solid var(--color-onyx);
     }
     .statutory-card ul {

@@ -19,14 +19,14 @@ import { NgxMarqueeComponent } from './marquee.component';
       <om-border-beam
         id="overlayBeam"
         [gradientColorStart]="'#ffffff'"
-        [gradientColorEnd]="'#9a6b32'"
+        [gradientColorEnd]="'#d97706'"
         [borderWidth]="'2px'"
         [animationDuration]="'6s'"
         [reverse]="true"
       ></om-border-beam>
       <om-background-beams
         [beamColor]="'rgba(255, 255, 255, 0.5)'"
-        [ambientColor]="'rgba(154, 107, 50, 0.3)'"
+        [ambientColor]="'rgba(217, 119, 6, 0.3)'"
         [showGrid]="true"
       ></om-background-beams>
       <om-shiny-text
@@ -72,7 +72,7 @@ describe('NGXUI Animation Components (ngxui.com inspiration)', () => {
     expect(beamMask).toBeTruthy();
     expect(beamMask.classList.contains('reverse')).toBe(true);
     expect(beamMask.style.getPropertyValue('--color-from')).toBe('#ffffff');
-    expect(beamMask.style.getPropertyValue('--color-to')).toBe('#9a6b32');
+    expect(beamMask.style.getPropertyValue('--color-to')).toBe('#d97706');
     expect(beamMask.style.getPropertyValue('--border-width')).toBe('2px');
     expect(beamMask.style.getPropertyValue('--beam-duration')).toBe('6s');
     expect(compiled.querySelector('.border-beam-track')).toBeTruthy();
@@ -117,7 +117,7 @@ describe('NGXUI Animation Components (ngxui.com inspiration)', () => {
 
     const firstWrap = wraps[0] as HTMLElement;
     expect(firstWrap.style.getPropertyValue('--beam-color')).toBe('rgba(255, 255, 255, 0.5)');
-    expect(firstWrap.style.getPropertyValue('--ambient-color')).toBe('rgba(154, 107, 50, 0.3)');
+    expect(firstWrap.style.getPropertyValue('--ambient-color')).toBe('rgba(217, 119, 6, 0.3)');
 
     const svgs = compiled.querySelectorAll('.beams-svg');
     expect(svgs.length).toBe(2);

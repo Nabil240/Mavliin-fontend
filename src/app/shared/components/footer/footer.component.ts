@@ -88,9 +88,9 @@ import { ToastService } from '../../../core/services/toast.service';
   `,
   styles: [`
     .site-footer {
-      background: linear-gradient(180deg, #efe7da 0%, #e7dccb 100%);
+      background: var(--color-alabaster);
       color: var(--color-text);
-      border-top: 1px solid var(--color-border-dark);
+      border-top: 1px solid var(--color-border);
       padding-top: 4rem;
       margin-top: 4rem;
       padding-bottom: 60px;

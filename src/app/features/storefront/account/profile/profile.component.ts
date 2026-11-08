@@ -370,7 +370,7 @@ import { ToastService } from '../../../../core/services/toast.service';
       font-size: 0.7rem;
       font-weight: 700;
       letter-spacing: 0.16em;
-      color: var(--color-gold, #996515);
+      color: var(--color-gold, #d97706);
       display: block;
       margin-bottom: 0.25rem;
     }
@@ -386,27 +386,27 @@ import { ToastService } from '../../../../core/services/toast.service';
         font-size: 0.8rem;
         font-weight: 600;
         text-decoration: none;
-        background: var(--color-alabaster, #f9f9f9);
-        border: 1px solid var(--color-border, #e5e5e5);
-        color: var(--color-text, #333);
+        background: var(--color-alabaster, #f1f5f9);
+        border: 1px solid var(--color-border, #e2e8f0);
+        color: var(--color-text, #0f172a);
         transition: all 0.2s ease;
 
         &.active, &:hover {
-          background: var(--color-onyx, #121212);
-          color: var(--color-white, #fff);
-          border-color: var(--color-onyx, #121212);
+          background: var(--color-onyx, #18181b);
+          color: var(--color-white, #ffffff);
+          border-color: var(--color-onyx, #18181b);
         }
 
         &.pill-logout {
-          color: var(--color-berry, #be123c);
-          border-color: rgba(190, 18, 60, 0.3);
-          background: #fff1f2;
+          color: var(--color-berry, #e11d48);
+          border-color: rgba(225, 29, 72, 0.3);
+          background: var(--color-berry-bg, #fff1f2);
           cursor: pointer;
 
           &:hover {
-            background: var(--color-berry, #be123c);
-            color: var(--color-white, #fff);
-            border-color: var(--color-berry, #be123c);
+            background: var(--color-berry, #e11d48);
+            color: var(--color-white, #ffffff);
+            border-color: var(--color-berry, #e11d48);
           }
         }
       }
@@ -423,8 +423,8 @@ import { ToastService } from '../../../../core/services/toast.service';
     }
 
     .card-section {
-      background: var(--color-white, #fff);
-      border: 1px solid var(--color-border, #e5e5e5);
+      background: var(--color-white, #ffffff);
+      border: 1px solid var(--color-border, #e2e8f0);
       border-radius: 2px;
       padding: 1.5rem;
       margin-bottom: 1.5rem;
@@ -436,7 +436,7 @@ import { ToastService } from '../../../../core/services/toast.service';
       align-items: flex-start;
       margin-bottom: 1.25rem;
       padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--color-border, #f0f0f0);
+      border-bottom: 1px solid var(--color-border, #e2e8f0);
 
       h2 {
         font-size: 1rem;
@@ -449,8 +449,8 @@ import { ToastService } from '../../../../core/services/toast.service';
     .role-badge {
       display: inline-block;
       padding: 0.2rem 0.5rem;
-      background: #eef2ff;
-      color: #3730a3;
+      background: var(--color-blue-bg, #eff6ff);
+      color: var(--color-blue, #2563eb);
       border-radius: 2px;
       font-size: 0.68rem;
       font-weight: 700;
@@ -467,21 +467,21 @@ import { ToastService } from '../../../../core/services/toast.service';
         text-transform: uppercase;
         letter-spacing: 0.06em;
         margin-bottom: 0.4rem;
-        color: var(--color-text-muted, #555);
+        color: var(--color-text-muted, #64748b);
       }
 
       .form-control {
         width: 100%;
         padding: 0.65rem 0.85rem;
         font-size: 0.85rem;
-        border: 1px solid var(--color-border, #ccc);
+        border: 1px solid var(--color-border, #e2e8f0);
         border-radius: 2px;
-        background: #fff;
+        background: var(--color-white, #ffffff);
         box-sizing: border-box;
 
         &.readonly {
-          background: #f8fafc;
-          color: #64748b;
+          background: var(--color-ivory, #f8fafc);
+          color: var(--color-text-muted, #64748b);
           cursor: not-allowed;
         }
       }
@@ -513,8 +513,8 @@ import { ToastService } from '../../../../core/services/toast.service';
     }
 
     .address-card {
-      background: var(--color-alabaster, #fcfcfc);
-      border: 1px solid var(--color-border, #e5e5e5);
+      background: var(--color-alabaster, #f1f5f9);
+      border: 1px solid var(--color-border, #e2e8f0);
       border-radius: 2px;
       padding: 1.15rem;
       display: flex;
@@ -522,8 +522,8 @@ import { ToastService } from '../../../../core/services/toast.service';
       justify-content: space-between;
 
       &.is-default {
-        border-color: var(--color-onyx, #121212);
-        background: #fff;
+        border-color: var(--color-onyx, #18181b);
+        background: var(--color-white, #ffffff);
       }
     }
 
@@ -533,7 +533,7 @@ import { ToastService } from '../../../../core/services/toast.service';
       align-items: center;
       margin-bottom: 0.75rem;
       padding-bottom: 0.5rem;
-      border-bottom: 1px solid var(--color-border, #f0f0f0);
+      border-bottom: 1px solid var(--color-border, #e2e8f0);
     }
 
     .label-with-default {
@@ -551,8 +551,8 @@ import { ToastService } from '../../../../core/services/toast.service';
       font-size: 0.65rem;
       font-weight: 700;
       padding: 0.15rem 0.4rem;
-      background: var(--color-onyx, #121212);
-      color: #fff;
+      background: var(--color-onyx, #18181b);
+      color: var(--color-white, #ffffff);
       border-radius: 2px;
     }
 
@@ -568,10 +568,10 @@ import { ToastService } from '../../../../core/services/toast.service';
       font-size: 0.75rem;
       cursor: pointer;
       text-decoration: underline;
-      color: var(--color-text-muted, #666);
+      color: var(--color-text-muted, #64748b);
 
-      &.text-danger { color: #dc2626; }
-      &:hover { color: var(--color-onyx, #000); }
+      &.text-danger { color: var(--color-berry, #e11d48); }
+      &:hover { color: var(--color-onyx, #18181b); }
     }
 
     .addr-body {
@@ -581,11 +581,11 @@ import { ToastService } from '../../../../core/services/toast.service';
 
       p { margin: 0 0 0.25rem 0; }
       .recipient { font-weight: 600; }
-      .phone, .street, .city-post { color: #555; }
+      .phone, .street, .city-post { color: var(--color-text-muted, #64748b); }
     }
 
     .addr-footer {
-      border-top: 1px dashed var(--color-border, #e5e5e5);
+      border-top: 1px dashed var(--color-border, #e2e8f0);
       padding-top: 0.5rem;
     }
 
@@ -593,26 +593,26 @@ import { ToastService } from '../../../../core/services/toast.service';
       background: none;
       border: none;
       font-size: 0.72rem;
-      color: var(--color-gold, #996515);
+      color: var(--color-gold, #d97706);
       font-weight: 600;
       cursor: pointer;
       text-decoration: underline;
       padding: 0;
-      &:hover { color: var(--color-onyx, #121212); }
+      &:hover { color: var(--color-onyx, #18181b); }
     }
 
     .empty-addresses {
       text-align: center;
       padding: 2.5rem 1rem;
-      background: #fafafa;
-      border: 1px dashed #ddd;
+      background: var(--color-ivory, #f8fafc);
+      border: 1px dashed var(--color-border, #e2e8f0);
       border-radius: 2px;
     }
 
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.55);
+      background: rgba(24, 24, 27, 0.55);
       z-index: 1050;
       display: flex;
       align-items: center;
@@ -621,11 +621,11 @@ import { ToastService } from '../../../../core/services/toast.service';
     }
 
     .modal-card {
-      background: var(--color-white, #fff);
+      background: var(--color-white, #ffffff);
       width: 100%;
       max-width: 520px;
       border-radius: 2px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
       overflow: hidden;
     }
 
@@ -634,7 +634,7 @@ import { ToastService } from '../../../../core/services/toast.service';
       justify-content: space-between;
       align-items: center;
       padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--color-border, #e5e5e5);
+      border-bottom: 1px solid var(--color-border, #e2e8f0);
 
       h3 { font-size: 0.9rem; margin: 0; letter-spacing: 0.06em; }
       .close-btn {
@@ -655,8 +655,8 @@ import { ToastService } from '../../../../core/services/toast.service';
       justify-content: flex-end;
       gap: 0.5rem;
       padding: 0.75rem 1.25rem;
-      border-top: 1px solid var(--color-border, #e5e5e5);
-      background: var(--color-alabaster, #f9f9f9);
+      border-top: 1px solid var(--color-border, #e2e8f0);
+      background: var(--color-alabaster, #f1f5f9);
     }
   `],
 })

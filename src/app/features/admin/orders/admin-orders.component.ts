@@ -374,7 +374,7 @@ import { BdtCurrencyPipe } from '../../../shared/pipes/bdt.pipe';
       color: var(--color-white);
       border: none;
       font-weight: 600;
-      &:hover { background: #059669; }
+      &:hover { background: var(--color-emerald-dark, #047857); }
     }
     .btn-block {
       width: 100%;

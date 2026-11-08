@@ -33,6 +33,7 @@ import { AdminCouponsComponent } from './features/admin/coupons/admin-coupons.co
 import { AdminReportsComponent } from './features/admin/reports/admin-reports.component';
 import { AdminDeliverySettingsComponent } from './features/admin/delivery-settings/admin-delivery-settings.component';
 import { AdminMessagesComponent } from './features/admin/messages/admin-messages.component';
+import { AdminBannersComponent } from './features/admin/banners/admin-banners.component';
 
 export const routes: Routes = [
   // Admin Login (Standalone)
@@ -50,6 +51,7 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: AdminDashboardComponent, title: 'Executive Dashboard — MAVLLIN Backoffice' },
+      { path: 'banners', component: AdminBannersComponent, title: 'Hero Slides & Banners — MAVLLIN Backoffice' },
       { path: 'messages', component: AdminMessagesComponent, title: 'Unified Omnichannel Messages — MAVLLIN Backoffice' },
       { path: 'categories', component: AdminCategoriesComponent, title: 'Categories Hierarchy — MAVLLIN Backoffice' },
       { path: 'products', component: ProductManageListComponent, title: 'Manage Products — MAVLLIN Backoffice' },

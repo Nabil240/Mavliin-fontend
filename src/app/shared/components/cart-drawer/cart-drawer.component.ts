@@ -165,7 +165,7 @@ import { BdtCurrencyPipe } from '../../../shared/pipes/bdt.pipe';
       z-index: 1510;
       display: flex;
       flex-direction: column;
-      box-shadow: -8px 0 32px rgba(0, 0, 0, 0.14);
+      box-shadow: -8px 0 32px rgba(15, 23, 42, 0.15);
       animation: slideLeft 240ms cubic-bezier(0.16, 1, 0.3, 1);
     }
     .drawer-header {

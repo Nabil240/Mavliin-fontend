@@ -168,6 +168,7 @@ export interface CouponValidationResult {
   discount_value: number;
   discount_amount: number;
   coupon_id: number;
+  is_universal?: boolean;
 }
 
 export interface Coupon {
@@ -180,7 +181,70 @@ export interface Coupon {
   used_count: number;
   expires_at?: string | null;
   is_active: number | boolean;
+  is_universal?: number | boolean;
   created_at?: string;
+}
+
+export interface CouponMemberUsageItem {
+  order_id: number;
+  order_number: string;
+  user_id?: number | null;
+  customer_name: string;
+  customer_email: string;
+  customer_phone?: string | null;
+  coupon_id: number;
+  coupon_code: string;
+  discount_type: 'percentage' | 'fixed';
+  discount_value: number;
+  subtotal: number;
+  discount_amount: number;
+  shipping_fee: number;
+  total_amount: number;
+  order_status: string;
+  payment_status: string;
+  redeemed_at: string;
+}
+
+export interface CouponMemberSummary {
+  user_id: number;
+  customer_name: string;
+  customer_email: string;
+  customer_phone?: string | null;
+  total_orders_with_coupons: number;
+  distinct_coupons_count: number;
+  coupon_codes_used: string;
+  total_discount_saved: number;
+  last_used_at: string;
+}
+
+export interface CouponPerformanceSummary {
+  coupon_id: number;
+  code: string;
+  discount_type: 'percentage' | 'fixed';
+  discount_value: number;
+  min_order_amount: number;
+  usage_limit: number | null;
+  recorded_used_count: number;
+  is_active: number | boolean;
+  is_universal?: number | boolean;
+  actual_usage_count: number;
+  unique_members_count: number;
+  total_discount_amount: number;
+  total_order_sales: number;
+}
+
+export interface CouponAnalyticsOverview {
+  total_redemptions: number;
+  unique_members_count: number;
+  unique_coupons_count: number;
+  total_discount_granted: number;
+  total_order_volume: number;
+}
+
+export interface CouponAnalytics {
+  overview: CouponAnalyticsOverview;
+  coupons: CouponPerformanceSummary[];
+  members: CouponMemberSummary[];
 }
 
 export interface ShippingAddressSnapshot {

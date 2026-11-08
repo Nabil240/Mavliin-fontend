@@ -7,6 +7,7 @@ import { CheckoutComponent } from './checkout.component';
 import { OrderService } from '../../../core/services/order.service';
 import { CartService } from '../../../core/services/cart.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 describe('CheckoutComponent', () => {
   let fixture: any;
@@ -14,6 +15,24 @@ describe('CheckoutComponent', () => {
   let orderService: OrderService;
   let cartService: CartService;
   let toastService: ToastService;
+  let authService: AuthService;
+
+  // Helper to populate cart items so template renders .checkout-grid
+  const mockCartWithItem = () => {
+    cartService.items.set([
+      {
+        product_id: 1,
+        variant_id: 10,
+        product_name: 'Luxury Linen Kurta',
+        product_slug: 'luxury-linen-kurta',
+        price: 2500,
+        effective_price: 2500,
+        quantity: 1,
+        line_total: 2500,
+        stock_quantity: 10,
+      } as any,
+    ]);
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -27,6 +46,14 @@ describe('CheckoutComponent', () => {
     orderService = TestBed.inject(OrderService);
     cartService = TestBed.inject(CartService);
     toastService = TestBed.inject(ToastService);
+    authService = TestBed.inject(AuthService);
+    localStorage.clear();
+    authService.token.set(null);
+    authService.user.set(null);
+
+    vi.spyOn(cartService, 'syncOnSignIn').mockImplementation(() => {});
+    vi.spyOn(cartService, 'loadServerCart').mockImplementation(() => {});
+    vi.spyOn(cartService, 'clearCart').mockImplementation(() => {});
 
     vi.spyOn(orderService, 'getDeliveryCharges').mockReturnValue(
       of({
@@ -247,6 +274,172 @@ describe('CheckoutComponent', () => {
         transaction_id: 'CTB9928381X',
         advance_amount: 900,
         due_amount: expect.any(Number),
+      })
+    );
+  });
+
+  it('should display guest promo banner with sign-in and register CTAs when customer is unauthenticated', () => {
+    mockCartWithItem();
+    expect(authService.isAuthenticated()).toBe(false);
+    fixture.detectChanges();
+
+    const banner = fixture.nativeElement.querySelector('.guest-promo-banner');
+    expect(banner).toBeTruthy();
+    expect(banner.textContent).toContain('Member Exclusive Discounts');
+    expect(banner.textContent).toContain('Log in or create a MAVLLIN account to unlock and apply promo coupons.');
+
+    const links = banner.querySelectorAll('a');
+    expect(links.length).toBe(2);
+    expect(links[0].textContent).toContain('Sign In');
+    expect(links[1].textContent).toContain('Register');
+  });
+
+  it('should disable coupon input and apply button for unauthenticated guests', () => {
+    mockCartWithItem();
+    expect(authService.isAuthenticated()).toBe(false);
+    fixture.detectChanges();
+
+    const input = fixture.nativeElement.querySelector('#checkoutCoupon') as HTMLInputElement;
+    expect(input).toBeTruthy();
+    expect(input.disabled).toBe(true);
+    expect(input.placeholder).toBe('Log in to apply promo codes');
+
+    const applyBtn = fixture.nativeElement.querySelector('.promo-row button') as HTMLButtonElement;
+    expect(applyBtn).toBeTruthy();
+    expect(applyBtn.disabled).toBe(true);
+  });
+
+  it('should guard validateCoupon() and show toast error for unauthenticated guests', () => {
+    const errorSpy = vi.spyOn(toastService, 'error');
+    const validateSpy = vi.spyOn(orderService, 'validateCoupon');
+
+    component.couponInput = 'WELCOME10';
+    component.validateCoupon();
+
+    expect(errorSpy).toHaveBeenCalledWith(
+      'Please log in or create an account to unlock and apply coupon discounts.'
+    );
+    expect(validateSpy).not.toHaveBeenCalled();
+    expect(component.appliedCoupon()).toBeNull();
+  });
+
+  it('should guard quickApplyCoupon() and show toast error for unauthenticated guests', () => {
+    const errorSpy = vi.spyOn(toastService, 'error');
+    const validateSpy = vi.spyOn(orderService, 'validateCoupon');
+
+    component.quickApplyCoupon('WELCOME10');
+
+    expect(errorSpy).toHaveBeenCalledWith(
+      'Please log in or create an account to unlock and apply coupon discounts.'
+    );
+    expect(validateSpy).not.toHaveBeenCalled();
+    expect(component.appliedCoupon()).toBeNull();
+  });
+
+  it('should ensure placeGuestOrder receives coupon_code: null and resets appliedCoupon', () => {
+    const placeGuestSpy = vi.spyOn(orderService, 'placeGuestOrder').mockReturnValue(
+      of({
+        success: true,
+        message: 'Order created',
+        data: { id: 99, order_number: 'MAV-GUEST-COUPON-0' } as any,
+      })
+    );
+
+    // Simulate tampering with appliedCoupon in guest mode
+    component.appliedCoupon.set({
+      code: 'UNAUTH10',
+      discount_amount: 250,
+      discount_type: 'percentage',
+      discount_value: 10,
+      coupon_id: 999,
+    });
+
+    component.agreeTerms = true;
+    component.recipientName = 'Tariqul Islam';
+    component.phone = '01711000000';
+    component.streetAddress = 'House 48, Road 11';
+    component.postalCode = '1213';
+
+    component.placeOrder();
+
+    expect(placeGuestSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        coupon_code: null,
+      })
+    );
+    expect(component.appliedCoupon()).toBeNull();
+  });
+
+  it('should allow authenticated users to validate and apply coupons successfully', () => {
+    authService.token.set('valid-auth-token');
+    authService.user.set({ id: 5, full_name: 'Sadia Khan', email: 'sadia@mavllin.com', role: 'customer' } as any);
+    expect(authService.isAuthenticated()).toBe(true);
+
+    mockCartWithItem();
+    fixture.detectChanges();
+
+    const banner = fixture.nativeElement.querySelector('.guest-promo-banner');
+    expect(banner).toBeNull();
+
+    const input = fixture.nativeElement.querySelector('#checkoutCoupon') as HTMLInputElement;
+    expect(input.disabled).toBe(false);
+    expect(input.placeholder).toBe('WELCOME10, FASHION20, FREESHIP15');
+
+    const successSpy = vi.spyOn(toastService, 'success');
+    vi.spyOn(orderService, 'validateCoupon').mockReturnValue(
+      of({
+        success: true,
+        message: 'Coupon is valid',
+        data: {
+          code: 'WELCOME10',
+          discount_type: 'percentage',
+          discount_value: 10,
+          discount_amount: 250,
+          coupon_id: 1,
+        },
+      })
+    );
+
+    component.couponInput = 'WELCOME10';
+    component.validateCoupon();
+
+    expect(component.appliedCoupon()).toEqual(
+      expect.objectContaining({ code: 'WELCOME10', discount_amount: 250 })
+    );
+    expect(successSpy).toHaveBeenCalledWith('Promo code WELCOME10 applied!');
+  });
+
+  it('should submit applied coupon_code when placing authenticated order', () => {
+    authService.token.set('valid-auth-token');
+    authService.user.set({ id: 5, full_name: 'Sadia Khan', email: 'sadia@mavllin.com', role: 'customer' } as any);
+
+    const placeOrderSpy = vi.spyOn(orderService, 'placeOrder').mockReturnValue(
+      of({
+        success: true,
+        message: 'Order created',
+        data: { id: 100, order_number: 'MAV-AUTH-COUPON-1' } as any,
+      })
+    );
+
+    component.appliedCoupon.set({
+      code: 'WELCOME10',
+      discount_amount: 250,
+      discount_type: 'percentage',
+      discount_value: 10,
+      coupon_id: 1,
+    });
+
+    component.agreeTerms = true;
+    component.recipientName = 'Sadia Khan';
+    component.phone = '01711000000';
+    component.streetAddress = 'House 12, Road 4, Dhanmondi';
+    component.postalCode = '1209';
+
+    component.placeOrder();
+
+    expect(placeOrderSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        coupon_code: 'WELCOME10',
       })
     );
   });

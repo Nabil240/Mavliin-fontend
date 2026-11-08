@@ -182,7 +182,7 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
       justify-content: space-between;
       align-items: flex-end;
       margin-bottom: 1.5rem;
-      border-bottom: 1px solid var(--color-border, #e5e5e5);
+      border-bottom: 1px solid var(--color-border, #e2e8f0);
       padding-bottom: 1.25rem;
     }
 
@@ -190,7 +190,7 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
       font-size: 0.68rem;
       font-weight: 700;
       letter-spacing: 0.14em;
-      color: var(--color-gold, #996515);
+      color: var(--color-gold, #d97706);
       text-transform: uppercase;
       display: block;
       margin-bottom: 0.25rem;
@@ -201,9 +201,9 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
       gap: 1rem;
       flex-wrap: wrap;
       margin-bottom: 1.5rem;
-      background: #fff;
+      background: var(--color-white, #ffffff);
       padding: 1rem;
-      border: 1px solid var(--color-border, #e5e5e5);
+      border: 1px solid var(--color-border, #e2e8f0);
       border-radius: 2px;
 
       .search-box {
@@ -218,14 +218,14 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
       .form-control {
         padding: 0.5rem 0.75rem;
         font-size: 0.85rem;
-        border: 1px solid var(--color-border, #ccc);
+        border: 1px solid var(--color-border, #e2e8f0);
         border-radius: 2px;
       }
     }
 
     .table-card {
-      background: #fff;
-      border: 1px solid var(--color-border, #e5e5e5);
+      background: var(--color-white, #ffffff);
+      border: 1px solid var(--color-border, #e2e8f0);
       border-radius: 2px;
       overflow-x: auto;
     }
@@ -238,18 +238,18 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
       th {
         text-align: left;
         padding: 0.75rem 1rem;
-        background: #fafafa;
-        border-bottom: 1px solid var(--color-border, #e5e5e5);
+        background: var(--color-alabaster, #f1f5f9);
+        border-bottom: 1px solid var(--color-border, #e2e8f0);
         font-size: 0.72rem;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.06em;
-        color: #666;
+        color: var(--color-text-muted, #64748b);
       }
 
       td {
         padding: 0.85rem 1rem;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid var(--color-border, #e2e8f0);
         vertical-align: middle;
       }
     }
@@ -264,25 +264,25 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
         height: 56px;
         object-fit: cover;
         border-radius: 2px;
-        border: 1px solid #eee;
+        border: 1px solid var(--color-border, #e2e8f0);
       }
       .p-name { display: block; font-size: 0.9rem; }
-      .p-slug { font-size: 0.72rem; color: #888; }
+      .p-slug { font-size: 0.72rem; color: var(--color-text-light, #94a3b8); }
     }
 
     .cat-pill {
       display: inline-block;
       padding: 0.2rem 0.5rem;
-      background: #f1f5f9;
+      background: var(--color-alabaster, #f1f5f9);
       border-radius: 2px;
       font-size: 0.75rem;
-      color: #334155;
+      color: var(--color-text, #0f172a);
     }
 
     .comp-price {
       display: block;
       font-size: 0.72rem;
-      color: #999;
+      color: var(--color-text-light, #94a3b8);
       text-decoration: line-through;
     }
 
@@ -293,12 +293,12 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
 
       .variant-chip {
         font-size: 0.7rem;
-        background: #f3f4f6;
+        background: var(--color-alabaster, #f1f5f9);
         padding: 0.15rem 0.35rem;
         border-radius: 2px;
-        color: #374151;
+        color: var(--color-text, #0f172a);
 
-        &.more { background: #e5e7eb; font-weight: 600; }
+        &.more { background: var(--color-beige, #e2e8f0); font-weight: 600; }
       }
     }
 
@@ -309,9 +309,9 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
       font-size: 0.72rem;
       font-weight: 700;
 
-      &.badge-stock { background: #d4edda; color: #155724; }
-      &.badge-warning { background: #fff3cd; color: #856404; }
-      &.badge-danger { background: #f8d7da; color: #721c24; }
+      &.badge-stock { background: var(--color-emerald-bg, #ecfdf5); color: var(--color-emerald, #059669); }
+      &.badge-warning { background: var(--color-gold-bg, #fffbeb); color: var(--color-gold, #d97706); }
+      &.badge-danger { background: var(--color-berry-bg, #fff1f2); color: var(--color-berry, #e11d48); }
     }
 
     .badge-btn {
@@ -323,19 +323,19 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
       cursor: pointer;
       text-transform: uppercase;
 
-      &.badge-stock { background: #d4edda; color: #155724; }
-      &.badge-danger { background: #f8d7da; color: #721c24; }
+      &.badge-stock { background: var(--color-emerald-bg, #ecfdf5); color: var(--color-emerald, #059669); }
+      &.badge-danger { background: var(--color-berry-bg, #fff1f2); color: var(--color-berry, #e11d48); }
     }
 
     .btn-icon {
       background: none;
       border: none;
       font-size: 1.25rem;
-      color: #ccc;
+      color: var(--color-border-dark, #cbd5e1);
       cursor: pointer;
       line-height: 1;
 
-      &.active { color: #f59e0b; }
+      &.active { color: var(--color-gold, #d97706); }
     }
 
     .row-actions {
@@ -351,21 +351,21 @@ import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
     }
 
     .btn-danger-xs {
-      background: #fee2e2;
-      border: 1px solid #fca5a5;
-      color: #991b1b;
+      background: var(--color-berry-bg, #fff1f2);
+      border: 1px solid rgba(225, 29, 72, 0.25);
+      color: var(--color-berry, #e11d48);
       padding: 0.2rem 0.45rem;
       font-size: 0.72rem;
       border-radius: 2px;
       cursor: pointer;
-      &:hover { background: #ef4444; color: #fff; }
+      &:hover { background: var(--color-berry, #e11d48); color: var(--color-white, #ffffff); }
     }
 
     .state-card {
       text-align: center;
       padding: 3rem;
-      background: #fff;
-      border: 1px solid var(--color-border, #e5e5e5);
+      background: var(--color-white, #ffffff);
+      border: 1px solid var(--color-border, #e2e8f0);
     }
   `],
 })

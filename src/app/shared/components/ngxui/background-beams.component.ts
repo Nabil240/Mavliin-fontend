@@ -147,7 +147,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
       left: 10%;
       width: 320px;
       height: 320px;
-      background: radial-gradient(circle, var(--ambient-color, rgba(154, 107, 50, 0.25)) 0%, transparent 70%);
+      background: radial-gradient(circle, var(--ambient-color, rgba(217, 119, 6, 0.15)) 0%, transparent 70%);
       animation-duration: 12s;
     }
 
@@ -156,7 +156,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
       right: 12%;
       width: 380px;
       height: 380px;
-      background: radial-gradient(circle, rgba(214, 197, 171, 0.22) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(203, 213, 225, 0.25) 0%, transparent 70%);
       animation-duration: 16s;
       animation-delay: -4s;
     }
@@ -166,7 +166,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
       left: 40%;
       width: 260px;
       height: 260px;
-      background: radial-gradient(circle, var(--beam-color, rgba(232, 222, 203, 0.2)) 0%, transparent 70%);
+      background: radial-gradient(circle, var(--beam-color, rgba(255, 255, 255, 0.2)) 0%, transparent 70%);
       animation-duration: 18s;
       animation-delay: -8s;
     }
@@ -257,8 +257,8 @@ export class NgxBackgroundBeamsComponent implements AfterViewInit, OnDestroy {
   readonly gradId1 = `beamGrad1_${this.uniqueId}`;
   readonly gradId2 = `beamGrad2_${this.uniqueId}`;
 
-  @Input() beamColor = 'rgba(214, 197, 171, 0.45)';
-  @Input() ambientColor = 'rgba(154, 107, 50, 0.2)';
+  @Input() beamColor = 'rgba(255, 255, 255, 0.45)';
+  @Input() ambientColor = 'rgba(217, 119, 6, 0.15)';
   @Input() gridColor = 'rgba(255, 255, 255, 0.06)';
   @Input() showGrid = true;
 

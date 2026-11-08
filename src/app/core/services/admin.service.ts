@@ -3,8 +3,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   ApiResponse,
+  Banner,
   Category,
   Coupon,
+  CouponAnalytics,
+  CouponMemberUsageItem,
   DashboardData,
   InventoryMovement,
   Order,
@@ -59,6 +62,23 @@ export class AdminService {
 
   deleteCategory(id: number): Observable<ApiResponse<null>> {
     return this.http.delete<ApiResponse<null>>(`/api/v1/categories/${id}`);
+  }
+
+  // Hero Slides & Banners
+  getBanners(): Observable<ApiResponse<Banner[]>> {
+    return this.http.get<ApiResponse<Banner[]>>('/api/v1/banners?all=true');
+  }
+
+  createBanner(payload: Partial<Banner>): Observable<ApiResponse<Banner>> {
+    return this.http.post<ApiResponse<Banner>>('/api/v1/banners', payload);
+  }
+
+  updateBanner(id: number, payload: Partial<Banner>): Observable<ApiResponse<Banner>> {
+    return this.http.put<ApiResponse<Banner>>(`/api/v1/banners/${id}`, payload);
+  }
+
+  deleteBanner(id: number): Observable<ApiResponse<null>> {
+    return this.http.delete<ApiResponse<null>>(`/api/v1/banners/${id}`);
   }
 
   // Inventory
@@ -191,6 +211,27 @@ export class AdminService {
 
   deleteCoupon(id: number): Observable<ApiResponse<null>> {
     return this.http.delete<ApiResponse<null>>(`/api/v1/coupons/${id}`);
+  }
+
+  getCouponAnalytics(): Observable<ApiResponse<CouponAnalytics>> {
+    return this.http.get<ApiResponse<CouponAnalytics>>('/api/v1/coupons/analytics');
+  }
+
+  getCouponMemberUsage(
+    paramsObj: {
+      search?: string;
+      couponCode?: string;
+      limit?: number;
+      offset?: number;
+    } = {}
+  ): Observable<ApiResponse<CouponMemberUsageItem[]>> {
+    let params = new HttpParams();
+    Object.entries(paramsObj).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== '') {
+        params = params.set(k, String(v));
+      }
+    });
+    return this.http.get<ApiResponse<CouponMemberUsageItem[]>>('/api/v1/coupons/member-usage', { params });
   }
 
   // Reports & Payments

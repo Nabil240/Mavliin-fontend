@@ -19,6 +19,14 @@ import { AuthService } from '../../core/services/auth.service';
           <a routerLink="/admin/dashboard" routerLinkActive="active">
             <span>Dashboard Overview</span>
           </a>
+          <a routerLink="/admin/banners" routerLinkActive="active">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+            <span>Hero Slides &amp; Banners</span>
+          </a>
           <a routerLink="/admin/messages" routerLinkActive="active">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -87,7 +95,7 @@ import { AuthService } from '../../core/services/auth.service';
       min-height: 100vh;
       display: grid;
       grid-template-columns: 250px 1fr;
-      background: #f4f4f5;
+      background: var(--color-ivory, #f8fafc);
 
       @media (max-width: 991px) {
         grid-template-columns: 1fr;
@@ -122,7 +130,7 @@ import { AuthService } from '../../core/services/auth.service';
       flex-direction: column;
       gap: 0.25rem;
       padding-bottom: 1.25rem;
-      border-bottom: 1px solid #27272a;
+      border-bottom: 1px solid var(--color-onyx-light, #27272a);
       margin-bottom: 1.25rem;
     }
     .brand-title {
@@ -135,7 +143,7 @@ import { AuthService } from '../../core/services/auth.service';
     .brand-badge {
       font-size: 0.65rem;
       letter-spacing: 0.16em;
-      color: #a1a1aa;
+      color: var(--color-text-light, #94a3b8);
     }
     .sidebar-nav {
       flex: 1;
@@ -151,11 +159,11 @@ import { AuthService } from '../../core/services/auth.service';
         border-radius: var(--radius-sm);
         font-size: 0.85rem;
         font-weight: 500;
-        color: #d4d4d8;
+        color: var(--color-border-dark, #cbd5e1);
         transition: all 150ms ease;
 
         &:hover {
-          background: #27272a;
+          background: var(--color-onyx-light, #27272a);
           color: var(--color-white);
         }
         &.active {
@@ -172,10 +180,10 @@ import { AuthService } from '../../core/services/auth.service';
       width: 17px;
       height: 17px;
       flex-shrink: 0;
-      stroke: #a1a1aa;
+      stroke: var(--color-text-light, #94a3b8);
     }
     .sidebar-footer {
-      border-top: 1px solid #27272a;
+      border-top: 1px solid var(--color-onyx-light, #27272a);
       padding-top: 1rem;
       display: flex;
       flex-direction: column;
@@ -183,14 +191,14 @@ import { AuthService } from '../../core/services/auth.service';
     }
     .storefront-return {
       font-size: 0.8rem;
-      color: #a1a1aa;
+      color: var(--color-text-light, #94a3b8);
       &:hover { color: var(--color-white); }
     }
     .logout-btn {
       text-align: left;
       font-size: 0.82rem;
       font-weight: 600;
-      color: #fda4af;
+      color: var(--color-berry-light, #fb7185);
     }
     .admin-main {
       display: flex;

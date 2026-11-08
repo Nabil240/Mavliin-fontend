@@ -405,7 +405,7 @@ interface FormVariantRow {
       justify-content: space-between;
       align-items: flex-end;
       margin-bottom: 1.5rem;
-      border-bottom: 1px solid var(--color-border, #e5e5e5);
+      border-bottom: 1px solid var(--color-border, #e2e8f0);
       padding-bottom: 1.25rem;
     }
 
@@ -413,7 +413,7 @@ interface FormVariantRow {
       font-size: 0.68rem;
       font-weight: 700;
       letter-spacing: 0.14em;
-      color: var(--color-gold, #996515);
+      color: var(--color-gold, #d97706);
       text-transform: uppercase;
       display: block;
       margin-bottom: 0.25rem;
@@ -429,8 +429,8 @@ interface FormVariantRow {
       margin-bottom: 0.5rem;
       color: var(--color-text-muted);
 
-      a { color: var(--color-text-muted); text-decoration: none; &:hover { color: #000; } }
-      .current { color: #000; font-weight: 600; }
+      a { color: var(--color-text-muted); text-decoration: none; &:hover { color: var(--color-onyx, #18181b); } }
+      .current { color: var(--color-onyx, #18181b); font-weight: 600; }
     }
 
     .head-actions {
@@ -449,8 +449,8 @@ interface FormVariantRow {
     }
 
     .card-section {
-      background: #fff;
-      border: 1px solid var(--color-border, #e5e5e5);
+      background: var(--color-white, #ffffff);
+      border: 1px solid var(--color-border, #e2e8f0);
       border-radius: 2px;
       padding: 1.5rem;
       margin-bottom: 1.5rem;
@@ -463,7 +463,7 @@ interface FormVariantRow {
       margin-top: 0;
       margin-bottom: 1.25rem;
       padding-bottom: 0.5rem;
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid var(--color-border, #e2e8f0);
     }
 
     .section-header-split {
@@ -472,10 +472,10 @@ interface FormVariantRow {
       align-items: flex-start;
       margin-bottom: 1rem;
       padding-bottom: 0.5rem;
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid var(--color-border, #e2e8f0);
 
       .section-title { margin-bottom: 0.25rem; border: none; padding: 0; }
-      .section-desc { font-size: 0.78rem; color: #666; margin: 0; }
+      .section-desc { font-size: 0.78rem; color: var(--color-text-muted, #64748b); margin: 0; }
       .split-actions { display: flex; gap: 0.5rem; }
     }
 
@@ -489,16 +489,16 @@ interface FormVariantRow {
         text-transform: uppercase;
         letter-spacing: 0.06em;
         margin-bottom: 0.4rem;
-        color: #555;
+        color: var(--color-text-muted, #64748b);
       }
 
       .form-control {
         width: 100%;
         padding: 0.65rem 0.85rem;
         font-size: 0.85rem;
-        border: 1px solid var(--color-border, #ccc);
+        border: 1px solid var(--color-border, #e2e8f0);
         border-radius: 2px;
-        background: #fff;
+        background: var(--color-white, #ffffff);
         box-sizing: border-box;
       }
     }
@@ -510,8 +510,8 @@ interface FormVariantRow {
     }
 
     .generator-box {
-      background: var(--color-alabaster, #f9f9f9);
-      border: 1px dashed var(--color-border, #ccc);
+      background: var(--color-alabaster, #f1f5f9);
+      border: 1px dashed var(--color-border, #e2e8f0);
       padding: 1rem;
       margin-bottom: 1.25rem;
       border-radius: 2px;
@@ -521,7 +521,7 @@ interface FormVariantRow {
         justify-content: space-between;
         font-size: 0.8rem;
         margin-bottom: 0.75rem;
-        span { color: #666; }
+        span { color: var(--color-text-muted, #64748b); }
       }
       .gen-grid {
         display: grid;
@@ -548,24 +548,24 @@ interface FormVariantRow {
       th {
         text-align: left;
         padding: 0.5rem 0.6rem;
-        background: #fafafa;
-        border-bottom: 1px solid #e5e5e5;
+        background: var(--color-alabaster, #f1f5f9);
+        border-bottom: 1px solid var(--color-border, #e2e8f0);
         font-size: 0.7rem;
         text-transform: uppercase;
         letter-spacing: 0.06em;
-        color: #666;
+        color: var(--color-text-muted, #64748b);
       }
 
       td {
         padding: 0.4rem 0.5rem;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid var(--color-border, #e2e8f0);
       }
 
       .table-input {
         width: 100%;
         padding: 0.4rem 0.5rem;
         font-size: 0.82rem;
-        border: 1px solid #ccc;
+        border: 1px solid var(--color-border, #e2e8f0);
         border-radius: 2px;
         box-sizing: border-box;
 
@@ -577,11 +577,11 @@ interface FormVariantRow {
         background: none;
         border: none;
         font-size: 1.25rem;
-        color: #ef4444;
+        color: var(--color-berry, #e11d48);
         cursor: pointer;
         padding: 0.2rem 0.4rem;
         line-height: 1;
-        &:disabled { color: #ccc; cursor: not-allowed; }
+        &:disabled { color: var(--color-text-light, #94a3b8); cursor: not-allowed; }
       }
     }
 
@@ -590,16 +590,16 @@ interface FormVariantRow {
       justify-content: space-between;
       align-items: center;
       padding: 0.75rem 0;
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid var(--color-border, #e2e8f0);
 
       .toggle-label { font-size: 0.85rem; font-weight: 600; }
     }
 
     .img-preview {
       margin-top: 0.5rem;
-      border: 1px solid #e5e5e5;
+      border: 1px solid var(--color-border, #e2e8f0);
       padding: 0.25rem;
-      background: #fafafa;
+      background: var(--color-ivory, #f8fafc);
       text-align: center;
 
       img {
@@ -616,8 +616,8 @@ interface FormVariantRow {
     }
 
     .discount-preview-card {
-      background: var(--color-gold-bg, #f9f3e8);
-      border: 1px dashed var(--color-gold, #9a6b32);
+      background: var(--color-gold-bg, #fffbeb);
+      border: 1px dashed var(--color-gold, #d97706);
       border-radius: var(--radius-sm, 4px);
       padding: 0.75rem 1rem;
       margin-bottom: 1rem;
@@ -626,7 +626,7 @@ interface FormVariantRow {
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: var(--color-gold, #9a6b32);
+        color: var(--color-gold, #d97706);
         margin-bottom: 0.35rem;
       }
       .dp-row {
@@ -636,14 +636,14 @@ interface FormVariantRow {
         font-size: 0.85rem;
       }
       .text-emerald {
-        color: var(--color-emerald, #047857);
+        color: var(--color-emerald, #059669);
       }
     }
 
     .form-text-hint {
       display: block;
       font-size: 0.75rem;
-      color: var(--color-text-muted, #6e6256);
+      color: var(--color-text-muted, #64748b);
       margin-top: 0.25rem;
     }
   `],

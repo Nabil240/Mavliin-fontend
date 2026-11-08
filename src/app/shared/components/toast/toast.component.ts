@@ -51,7 +51,8 @@ import { ToastService } from '../../../core/services/toast.service';
     }
     .toast-success { border-left-color: var(--color-emerald); }
     .toast-error { border-left-color: var(--color-berry); }
-    .toast-info { border-left-color: var(--color-gold); }
+    .toast-info { border-left-color: var(--color-blue); }
+    .toast-warning { border-left-color: var(--color-gold); }
     .toast-content { flex: 1; }
     .toast-title {
       font-family: var(--font-display);

@@ -48,7 +48,7 @@ export interface PromoPopupConfig {
         aria-describedby="promoPopupSubtitle"
       >
         <div class="promo-modal" (click)="$event.stopPropagation()">
-          <om-border-beam [gradientColorStart]="'#c9a96e'" [gradientColorEnd]="'#2c241d'" [borderWidth]="'1.5px'" [animationDuration]="'8s'"></om-border-beam>
+          <om-border-beam [gradientColorStart]="'#cbd5e1'" [gradientColorEnd]="'#18181b'" [borderWidth]="'1.5px'" [animationDuration]="'8s'"></om-border-beam>
           <button
             type="button"
             class="promo-close-btn"
@@ -68,7 +68,7 @@ export interface PromoPopupConfig {
             aria-label="View promotional offer"
           >
             <span class="promo-badge">
-              <om-shiny-text [text]="badge()" [shimmerColor]="'#ffffff'"></om-shiny-text>
+              <om-shiny-text [text]="badge()" [textColor]="'#e2e8f0'" [shimmerColor]="'#ffffff'"></om-shiny-text>
             </span>
             <h2 id="promoPopupTitle" class="promo-title">{{ title() }}</h2>
             <p id="promoPopupSubtitle" class="promo-subtitle">{{ subtitle() }}</p>
@@ -105,7 +105,7 @@ export interface PromoPopupConfig {
       position: fixed;
       inset: 0;
       z-index: 2500;
-      background: rgba(15, 18, 22, 0.76);
+      background: rgba(24, 24, 27, 0.76);
       -webkit-transform: translate3d(0, 0, 0);
       transform: translate3d(0, 0, 0);
       display: flex;
@@ -120,7 +120,7 @@ export interface PromoPopupConfig {
     }
     @supports ((-webkit-backdrop-filter: blur(4px)) or (backdrop-filter: blur(4px))) {
       .promo-overlay {
-        background: rgba(15, 18, 22, 0.62);
+        background: rgba(24, 24, 27, 0.62);
         -webkit-backdrop-filter: blur(4px);
         backdrop-filter: blur(4px);
       }
@@ -131,11 +131,11 @@ export interface PromoPopupConfig {
       width: 100%;
       max-width: 480px;
       background: var(--color-white, #ffffff);
-      border: 1px solid var(--color-onyx, #1e232a);
+      border: 1px solid var(--color-onyx, #18181b);
       border-radius: var(--radius-sm, 4px);
       padding: 2.25rem 2rem 1.75rem;
       text-align: center;
-      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.22);
+      box-shadow: 0 24px 48px rgba(15, 23, 42, 0.22);
       cursor: default;
       touch-action: manipulation;
       animation: promoScaleIn 220ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -149,10 +149,10 @@ export interface PromoPopupConfig {
       height: 36px;
       min-width: 36px;
       min-height: 36px;
-      border: 1px solid var(--color-border, #e5e7eb);
+      border: 1px solid var(--color-border, #e2e8f0);
       border-radius: 50%;
       background: var(--color-white, #ffffff);
-      color: var(--color-onyx, #1e232a);
+      color: var(--color-onyx, #18181b);
       font-size: 1.35rem;
       line-height: 1;
       display: inline-flex;
@@ -163,7 +163,7 @@ export interface PromoPopupConfig {
       -webkit-tap-highlight-color: transparent;
       transition: background 150ms ease, color 150ms ease;
       &:hover {
-        background: var(--color-onyx, #1e232a);
+        background: var(--color-onyx, #18181b);
         color: var(--color-white, #ffffff);
       }
       &::after {
@@ -182,20 +182,20 @@ export interface PromoPopupConfig {
       outline: none;
     }
     .promo-clickable-card:focus-visible {
-      outline: 2px solid #c9a96e;
+      outline: 2px solid var(--color-onyx, #18181b);
       outline-offset: 4px;
       border-radius: 2px;
     }
     .promo-close-btn:focus-visible,
     .promo-dismiss-link:focus-visible {
-      outline: 2px solid #c9a96e;
+      outline: 2px solid var(--color-onyx, #18181b);
       outline-offset: 2px;
     }
     .promo-badge {
       display: inline-block;
       padding: 0.28rem 0.75rem;
-      background: #1e232a;
-      color: #ffffff;
+      background: var(--color-onyx, #18181b);
+      color: var(--color-white, #ffffff);
       font-size: 0.68rem;
       font-weight: 700;
       letter-spacing: 0.16em;
@@ -208,19 +208,19 @@ export interface PromoPopupConfig {
       font-weight: 800;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: var(--color-onyx, #1e232a);
+      color: var(--color-onyx, #18181b);
       margin: 0 0 0.75rem;
       line-height: 1.25;
     }
     .promo-subtitle {
       font-size: 0.88rem;
-      color: var(--color-text-muted, #52525b);
+      color: var(--color-text-muted, #64748b);
       line-height: 1.6;
       margin: 0 0 1.25rem;
     }
     .promo-code-box {
-      background: var(--color-alabaster, #f8f7f4);
-      border: 1px dashed var(--color-onyx, #1e232a);
+      background: var(--color-alabaster, #f1f5f9);
+      border: 1px dashed var(--color-border-dark, #cbd5e1);
       padding: 0.75rem 1rem;
       margin-bottom: 1.35rem;
       display: flex;
@@ -231,13 +231,13 @@ export interface PromoPopupConfig {
       font-size: 0.65rem;
       font-weight: 700;
       letter-spacing: 0.14em;
-      color: var(--color-text-muted, #71717a);
+      color: var(--color-text-muted, #64748b);
     }
     .code-value {
       font-size: 1.15rem;
       font-weight: 800;
       letter-spacing: 0.18em;
-      color: var(--color-onyx, #1e232a);
+      color: var(--color-onyx, #18181b);
       user-select: all;
       -webkit-user-select: all;
     }
@@ -248,7 +248,7 @@ export interface PromoPopupConfig {
       font-weight: 700;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      background: var(--color-onyx, #1e232a);
+      background: var(--color-onyx, #18181b);
       color: var(--color-white, #ffffff);
       border: none;
       cursor: pointer;
@@ -262,7 +262,7 @@ export interface PromoPopupConfig {
       background: transparent;
       border: none;
       font-size: 0.76rem;
-      color: var(--color-text-muted, #71717a);
+      color: var(--color-text-muted, #64748b);
       text-decoration: underline;
       cursor: pointer;
       touch-action: manipulation;

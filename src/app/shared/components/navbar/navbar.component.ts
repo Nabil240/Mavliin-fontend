@@ -17,7 +17,7 @@ import { NgxShinyTextComponent } from '../ngxui';
         <div class="container announcement-inner">
           <p>
             <strong>COMPLIMENTARY DELIVERY</strong> ON ORDERS OVER ৳2,500 &bull; USE CODE
-            <strong><om-shiny-text text="WELCOME10" [shimmerColor]="'#9a6b32'"></om-shiny-text></strong> FOR 10% OFF &bull; <strong>CASH ON DELIVERY</strong> NATIONWIDE
+            <strong><om-shiny-text text="WELCOME10" [textColor]="'#e2e8f0'" [shimmerColor]="'#ffffff'"></om-shiny-text></strong> FOR 10% OFF &bull; <strong>CASH ON DELIVERY</strong> NATIONWIDE
           </p>
           <button
             type="button"
@@ -237,9 +237,9 @@ import { NgxShinyTextComponent } from '../ngxui';
   `,
   styles: [`
     .announcement-bar {
-      background: linear-gradient(90deg, #e8decb 0%, #f1e9da 50%, #e8decb 100%);
-      color: var(--color-onyx);
-      border-bottom: 1px solid var(--color-border-dark);
+      background: var(--color-onyx);
+      color: var(--color-white);
+      border-bottom: 1px solid var(--color-border);
       font-size: 0.72rem;
       letter-spacing: 0.06em;
       padding: 0.5rem 0;
@@ -255,15 +255,18 @@ import { NgxShinyTextComponent } from '../ngxui';
     .dismiss-announcement {
       position: absolute;
       right: 1.25rem;
-      color: var(--color-text-muted);
+      color: rgba(255, 255, 255, 0.7);
       font-size: 1.1rem;
       line-height: 1;
+      &:hover {
+        color: var(--color-white);
+      }
     }
     .site-header {
       position: sticky;
       top: 0;
       z-index: 1000;
-      background: rgba(253, 252, 251, 0.94);
+      background: rgba(255, 255, 255, 0.96);
       backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--color-border);
     }
@@ -345,7 +348,7 @@ import { NgxShinyTextComponent } from '../ngxui';
       padding: 0.3rem 0.65rem;
       background: var(--color-gold-bg);
       color: var(--color-gold);
-      border: 1px solid #fcd34d;
+      border: 1px solid rgba(217, 119, 6, 0.25);
       border-radius: 3px;
     }
     .nav-utility-link {
@@ -370,17 +373,17 @@ import { NgxShinyTextComponent } from '../ngxui';
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: var(--color-berry, #be123c);
+      color: var(--color-berry, #e11d48);
       padding: 0.25rem 0.55rem;
-      border: 1px solid rgba(190, 18, 60, 0.25);
+      border: 1px solid rgba(225, 29, 72, 0.25);
       border-radius: 3px;
       background: transparent;
       cursor: pointer;
       transition: all 0.2s ease;
       &:hover {
-        background: var(--color-berry, #be123c);
-        color: var(--color-white, #fff);
-        border-color: var(--color-berry, #be123c);
+        background: var(--color-berry, #e11d48);
+        color: var(--color-white, #ffffff);
+        border-color: var(--color-berry, #e11d48);
       }
     }
     .badge-counter {
@@ -550,7 +553,7 @@ import { NgxShinyTextComponent } from '../ngxui';
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       z-index: 1200;
-      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 -2px 10px rgba(15, 23, 42, 0.06);
 
       @media (min-width: 992px) {
         display: none;

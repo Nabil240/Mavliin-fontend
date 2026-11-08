@@ -98,8 +98,8 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
           from 0deg,
           transparent 0deg,
           transparent 280deg,
-          var(--color-from, #d6c5ab) 330deg,
-          var(--color-to, #9a6b32) 360deg
+          var(--color-from, #cbd5e1) 330deg,
+          var(--color-to, #d97706) 360deg
         );
         animation: borderBeamSpin var(--beam-duration, 8s) linear infinite;
         will-change: transform;
@@ -141,8 +141,8 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
   `],
 })
 export class NgxBorderBeamComponent implements AfterViewInit, OnDestroy {
-  @Input() gradientColorStart = '#d6c5ab';
-  @Input() gradientColorEnd = '#9a6b32';
+  @Input() gradientColorStart = '#cbd5e1';
+  @Input() gradientColorEnd = '#d97706';
   @Input() borderColor = 'transparent';
   @Input() borderRadius = 'inherit';
   @Input() borderWidth = '1.5px';

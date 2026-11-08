@@ -1,24 +1,26 @@
 :root {
-  /* Warm White & Beige Atelier Color Grading */
-  --color-onyx: #2c241d;
-  --color-onyx-light: #3f342b;
-  --color-ivory: #faf7f2;
-  --color-alabaster: #f3ede2;
-  --color-beige: #e8decb;
-  --color-beige-deep: #d6c5ab;
-  --color-white: #fdfcfb;
-  --color-border: #e6dfd3;
-  --color-border-dark: #d4c8b4;
-  --color-text: #2c241d;
-  --color-text-muted: #6e6256;
-  --color-text-light: #8c7e70;
-  --color-berry: #be123c;
+  /* Simple, Clean Minimalist Color Palette */
+  --color-onyx: #18181b;
+  --color-onyx-light: #27272a;
+  --color-ivory: #f8fafc;
+  --color-alabaster: #f1f5f9;
+  --color-beige: #e2e8f0;
+  --color-beige-deep: #cbd5e1;
+  --color-white: #ffffff;
+  --color-border: #e2e8f0;
+  --color-border-dark: #cbd5e1;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-text-light: #94a3b8;
+  --color-berry: #e11d48;
   --color-berry-bg: #fff1f2;
-  --color-emerald: #047857;
+  --color-berry-light: #fb7185;
+  --color-emerald: #059669;
   --color-emerald-bg: #ecfdf5;
-  --color-gold: #9a6b32;
-  --color-gold-bg: #f9f3e8;
-  --color-blue: #1d4ed8;
+  --color-emerald-dark: #047857;
+  --color-gold: #d97706;
+  --color-gold-bg: #fffbeb;
+  --color-blue: #2563eb;
   --color-blue-bg: #eff6ff;
 
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -27,9 +29,9 @@
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 10px;
-  --shadow-sm: 0 1px 3px 0 rgba(44, 36, 29, 0.05);
-  --shadow-md: 0 6px 18px -3px rgba(44, 36, 29, 0.08);
-  --shadow-lg: 0 16px 36px -6px rgba(44, 36, 29, 0.13);
+  --shadow-sm: 0 1px 3px 0 rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 14px -2px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 30px -4px rgba(15, 23, 42, 0.12);
   --transition: 200ms cubic-bezier(0.16, 1, 0.3, 1);
   --container-max: 1360px;
 }
@@ -196,7 +198,8 @@ img {
   border-color: var(--color-berry);
 
   &:hover:not(:disabled) {
-    background-color: #be123c;
+    background-color: var(--color-berry);
+    filter: brightness(0.92);
   }
 }
 
@@ -246,7 +249,7 @@ img {
   }
 
   &::placeholder {
-    color: #a1a1aa;
+    color: var(--color-text-light, #94a3b8);
   }
 }
 
@@ -485,16 +488,16 @@ img {
     display: none !important;
   }
 
-  /* Warm Atelier Gold Shimmer for White & Light-Background Buttons */
+  /* Clean Amber/Gold Accent Shimmer for Buttons */
   &.btn-shimmer-gold::before,
   .hero-actions &.btn-primary::before,
   .promo-overlay &.btn-primary::before {
     background: linear-gradient(
       120deg,
       transparent 0%,
-      rgba(154, 107, 50, 0) 20%,
-      rgba(154, 107, 50, 0.35) 50%,
-      rgba(154, 107, 50, 0) 80%,
+      rgba(217, 119, 6, 0) 20%,
+      rgba(217, 119, 6, 0.25) 50%,
+      rgba(217, 119, 6, 0) 80%,
       transparent 100%
     );
   }
@@ -533,8 +536,8 @@ img {
       padding: 1px;
       background: linear-gradient(
         135deg,
-        rgba(214, 197, 171, 0.75) 0%,
-        rgba(154, 107, 50, 0.35) 50%,
+        rgba(203, 213, 225, 0.8) 0%,
+        rgba(217, 119, 6, 0.25) 50%,
         transparent 100%
       );
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -613,7 +616,7 @@ img {
   .detail-box,
   .items-box,
   .summary-card {
-    border: 1px solid #ccc !important;
+    border: 1px solid #cbd5e1 !important;
     background: #fff !important;
   }
 
@@ -625,7 +628,7 @@ img {
 
   .items-table th,
   .items-table td {
-    border: 1px solid #ddd !important;
+    border: 1px solid #e2e8f0 !important;
     padding: 6px 8px !important;
   }
 }

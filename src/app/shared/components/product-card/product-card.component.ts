@@ -14,7 +14,7 @@ import { NgxBorderBeamComponent } from '../ngxui';
   template: `
     <article class="product-card ngx-spotlight-card">
       @if (product.is_featured) {
-        <om-border-beam [gradientColorStart]="'#e8decb'" [gradientColorEnd]="'#9a6b32'" [borderWidth]="'1px'" [animationDuration]="'12s'"></om-border-beam>
+        <om-border-beam [gradientColorStart]="'#cbd5e1'" [gradientColorEnd]="'#d97706'" [borderWidth]="'1px'" [animationDuration]="'12s'"></om-border-beam>
       }
       <div class="media-wrap">
         <a [routerLink]="['/products', product.slug]" class="image-link" [attr.aria-label]="product.name">
@@ -113,7 +113,7 @@ import { NgxBorderBeamComponent } from '../ngxui';
       &:hover {
         transform: translateY(-6px);
         border-color: var(--color-beige-deep);
-        box-shadow: 0 16px 34px -8px rgba(44, 36, 29, 0.13);
+        box-shadow: 0 16px 34px -8px rgba(15, 23, 42, 0.12);
       }
     }
     .media-wrap {
@@ -229,7 +229,7 @@ import { NgxBorderBeamComponent } from '../ngxui';
         animation: quickAddPop 380ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
       }
       &.disabled {
-        background: rgba(82, 82, 91, 0.9);
+        background: rgba(100, 116, 139, 0.9);
       }
     }
     @keyframes quickAddPop {

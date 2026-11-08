@@ -378,14 +378,14 @@ export class OrderConfirmationComponent implements OnInit {
     const itemsHtml = (o.items || [])
       .map((item, idx) => `
         <tr>
-          <td style="padding: 10px 12px; border-bottom: 1px solid #e5e5e5;">${idx + 1}</td>
-          <td style="padding: 10px 12px; border-bottom: 1px solid #e5e5e5;">
+          <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0;">${idx + 1}</td>
+          <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0;">
             <strong>${item.product_name}</strong>
-            <div style="font-size: 12px; color: #666;">SKU: ${item.variant_sku || 'N/A'} | Size: ${item.variant_size || 'N/A'} | Color: ${item.variant_color || 'N/A'}</div>
+            <div style="font-size: 12px; color: #64748b;">SKU: ${item.variant_sku || 'N/A'} | Size: ${item.variant_size || 'N/A'} | Color: ${item.variant_color || 'N/A'}</div>
           </td>
-          <td style="padding: 10px 12px; border-bottom: 1px solid #e5e5e5; text-align: right;">৳${Number(item.unit_price).toFixed(2)}</td>
-          <td style="padding: 10px 12px; border-bottom: 1px solid #e5e5e5; text-align: center;">${item.quantity}</td>
-          <td style="padding: 10px 12px; border-bottom: 1px solid #e5e5e5; text-align: right; font-weight: bold;">৳${Number(item.line_total).toFixed(2)}</td>
+          <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0; text-align: right;">৳${Number(item.unit_price).toFixed(2)}</td>
+          <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0; text-align: center;">${item.quantity}</td>
+          <td style="padding: 10px 12px; border-bottom: 1px solid #e2e8f0; text-align: right; font-weight: bold;">৳${Number(item.line_total).toFixed(2)}</td>
         </tr>
       `)
       .join('');
@@ -393,12 +393,12 @@ export class OrderConfirmationComponent implements OnInit {
     const advanceSectionHtml = Number(o.advance_amount || 0) > 0
       ? `
         <tr>
-          <td colspan="4" style="padding: 8px 12px; text-align: right; color: #047857; font-weight: bold;">Advance Paid / Required:</td>
-          <td style="padding: 8px 12px; text-align: right; color: #047857; font-weight: bold;">৳${Number(o.advance_amount).toFixed(2)}</td>
+          <td colspan="4" style="padding: 8px 12px; text-align: right; color: #059669; font-weight: bold;">Advance Paid / Required:</td>
+          <td style="padding: 8px 12px; text-align: right; color: #059669; font-weight: bold;">৳${Number(o.advance_amount).toFixed(2)}</td>
         </tr>
         <tr>
-          <td colspan="4" style="padding: 8px 12px; text-align: right; font-weight: bold; border-top: 1px solid #222;">Balance Due on Delivery:</td>
-          <td style="padding: 8px 12px; text-align: right; font-weight: bold; border-top: 1px solid #222;">৳${Number(o.due_amount || 0).toFixed(2)}</td>
+          <td colspan="4" style="padding: 8px 12px; text-align: right; font-weight: bold; border-top: 1px solid #18181b;">Balance Due on Delivery:</td>
+          <td style="padding: 8px 12px; text-align: right; font-weight: bold; border-top: 1px solid #18181b;">৳${Number(o.due_amount || 0).toFixed(2)}</td>
         </tr>
       `
       : '';
@@ -411,8 +411,8 @@ export class OrderConfirmationComponent implements OnInit {
   <style>
     body {
       font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      color: #2c241d;
-      background: #faf7f2;
+      color: #0f172a;
+      background: #f8fafc;
       margin: 0;
       padding: 40px 20px;
     }
@@ -420,16 +420,16 @@ export class OrderConfirmationComponent implements OnInit {
       max-width: 800px;
       margin: 0 auto;
       background: #ffffff;
-      border: 1px solid #e6dfd3;
+      border: 1px solid #e2e8f0;
       border-radius: 6px;
       padding: 40px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
     }
     .header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      border-bottom: 2px solid #2c241d;
+      border-bottom: 2px solid #0f172a;
       padding-bottom: 20px;
       margin-bottom: 30px;
     }
@@ -438,12 +438,12 @@ export class OrderConfirmationComponent implements OnInit {
       font-weight: 800;
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      color: #2c241d;
+      color: #0f172a;
       margin: 0 0 4px 0;
     }
     .brand-tagline {
       font-size: 13px;
-      color: #6e6256;
+      color: #64748b;
       letter-spacing: 0.05em;
       margin: 0;
     }
@@ -455,7 +455,7 @@ export class OrderConfirmationComponent implements OnInit {
       font-size: 20px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: #2c241d;
+      color: #0f172a;
     }
     .grid-2 {
       display: flex;
@@ -465,8 +465,8 @@ export class OrderConfirmationComponent implements OnInit {
     }
     .info-card {
       flex: 1;
-      background: #fdfcfb;
-      border: 1px solid #e6dfd3;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
       border-radius: 4px;
       padding: 16px 20px;
       font-size: 14px;
@@ -477,8 +477,8 @@ export class OrderConfirmationComponent implements OnInit {
       font-size: 13px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: #6e6256;
-      border-bottom: 1px solid #e6dfd3;
+      color: #64748b;
+      border-bottom: 1px solid #e2e8f0;
       padding-bottom: 6px;
     }
     table {
@@ -488,13 +488,13 @@ export class OrderConfirmationComponent implements OnInit {
       font-size: 14px;
     }
     th {
-      background: #f3ede2;
-      color: #2c241d;
+      background: #f1f5f9;
+      color: #0f172a;
       text-transform: uppercase;
       font-size: 12px;
       letter-spacing: 0.06em;
       padding: 10px 12px;
-      border-bottom: 1px solid #d6c5ab;
+      border-bottom: 1px solid #cbd5e1;
     }
     .totals-table {
       width: 320px;
@@ -506,7 +506,7 @@ export class OrderConfirmationComponent implements OnInit {
       padding: 6px 12px;
     }
     .grand-total-row td {
-      border-top: 2px solid #2c241d;
+      border-top: 2px solid #0f172a;
       font-size: 16px;
       font-weight: 800;
       padding-top: 10px;
@@ -519,14 +519,14 @@ export class OrderConfirmationComponent implements OnInit {
       font-weight: 700;
       text-transform: uppercase;
       background: #ecfdf5;
-      color: #047857;
+      color: #059669;
     }
     .footer {
-      border-top: 1px solid #e6dfd3;
+      border-top: 1px solid #e2e8f0;
       padding-top: 20px;
       text-align: center;
       font-size: 12px;
-      color: #6e6256;
+      color: #64748b;
       line-height: 1.6;
     }
   </style>
@@ -540,8 +540,8 @@ export class OrderConfirmationComponent implements OnInit {
       </div>
       <div class="invoice-title">
         <h2>Official Order Receipt</h2>
-        <div style="font-size: 13px; color: #6e6256;">Order Ref: <strong>${o.order_number}</strong></div>
-        <div style="font-size: 13px; color: #6e6256;">Date: ${orderDate}</div>
+        <div style="font-size: 13px; color: #64748b;">Order Ref: <strong>${o.order_number}</strong></div>
+        <div style="font-size: 13px; color: #64748b;">Date: ${orderDate}</div>
       </div>
     </div>
 
@@ -581,16 +581,16 @@ export class OrderConfirmationComponent implements OnInit {
 
     <table class="totals-table">
       <tr>
-        <td style="color: #6e6256;">Subtotal:</td>
+        <td style="color: #64748b;">Subtotal:</td>
         <td style="text-align: right; font-weight: 600;">৳${Number(o.subtotal).toFixed(2)}</td>
       </tr>
       ${Number(o.discount_amount) > 0 ? `
       <tr>
-        <td style="color: #047857;">Promotional Discount:</td>
-        <td style="text-align: right; color: #047857; font-weight: 600;">-৳${Number(o.discount_amount).toFixed(2)}</td>
+        <td style="color: #059669;">Promotional Discount:</td>
+        <td style="text-align: right; color: #059669; font-weight: 600;">-৳${Number(o.discount_amount).toFixed(2)}</td>
       </tr>` : ''}
       <tr>
-        <td style="color: #6e6256;">Shipping Fee:</td>
+        <td style="color: #64748b;">Shipping Fee:</td>
         <td style="text-align: right; font-weight: 600;">${Number(o.shipping_fee) === 0 ? 'FREE' : '৳' + Number(o.shipping_fee).toFixed(2)}</td>
       </tr>
       <tr class="grand-total-row">

@@ -34,11 +34,16 @@ import { BdtCurrencyPipe } from '../../../shared/pipes/bdt.pipe';
               <div class="guest-banner">
                 <div>
                   <strong>Checking out as a Guest</strong>
-                  <p>Have a MAVLLIN account for saved addresses and faster checkout?</p>
+                  <p>Sign in or register to unlock promo discounts, access saved addresses, and checkout faster.</p>
                 </div>
-                <a [routerLink]="['/auth/login']" [queryParams]="{ returnUrl: '/checkout' }" class="btn btn-outline btn-sm">
-                  Sign In
-                </a>
+                <div class="guest-banner-actions">
+                  <a [routerLink]="['/auth/login']" [queryParams]="{ returnUrl: '/checkout' }" class="btn btn-outline btn-sm">
+                    Sign In
+                  </a>
+                  <a [routerLink]="['/auth/register']" [queryParams]="{ returnUrl: '/checkout' }" class="btn btn-primary btn-sm">
+                    Register
+                  </a>
+                </div>
               </div>
             }
 
@@ -327,24 +332,60 @@ import { BdtCurrencyPipe } from '../../../shared/pipes/bdt.pipe';
               <!-- Coupon Code Validation -->
               <div class="promo-section">
                 <label class="form-label" for="checkoutCoupon">Promo / Discount Code</label>
+
+                @if (!auth.isAuthenticated()) {
+                  <div class="guest-promo-banner" data-testid="guest-coupon-banner">
+                    <div class="banner-content">
+                      <div class="banner-title">
+                        <svg class="lock-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                        <strong>Member Exclusive Discounts</strong>
+                      </div>
+                      <p>
+                        Log in or create a MAVLLIN account to unlock and apply promo coupons.
+                        @if (!guestUniversalUnlocked()) {
+                          <button type="button" class="universal-unlock-link" (click)="unlockUniversalCoupon()">Have a universal code?</button>
+                        }
+                      </p>
+                    </div>
+                    <div class="banner-actions">
+                      <a [routerLink]="['/auth/login']" [queryParams]="{ returnUrl: '/checkout' }" class="btn btn-xs btn-outline">
+                        Sign In
+                      </a>
+                      <a [routerLink]="['/auth/register']" [queryParams]="{ returnUrl: '/checkout' }" class="btn btn-xs btn-primary">
+                        Register
+                      </a>
+                    </div>
+                  </div>
+                }
+
                 <div class="promo-row">
                   <input
                     id="checkoutCoupon"
                     type="text"
                     name="couponInput"
                     class="form-control"
-                    placeholder="WELCOME10, FASHION20, FREESHIP15"
+                    [placeholder]="!auth.isAuthenticated() && !guestUniversalUnlocked() ? 'Log in to apply promo codes' : 'WELCOME10, FASHION20, FREESHIP15'"
                     [(ngModel)]="couponInput"
+                    [disabled]="!auth.isAuthenticated() && !guestUniversalUnlocked()"
+                    [attr.disabled]="!auth.isAuthenticated() && !guestUniversalUnlocked() ? '' : null"
                   />
-                  <button type="button" class="btn btn-outline btn-sm" (click)="validateCoupon()">
+                  <button
+                    type="button"
+                    class="btn btn-outline btn-sm"
+                    (click)="validateCoupon()"
+                    [disabled]="(!auth.isAuthenticated() && !guestUniversalUnlocked()) || !couponInput.trim() || submitting()"
+                  >
                     Apply
                   </button>
                 </div>
-                <div class="promo-hints">
+                <div class="promo-hints" [class.disabled-hints]="!auth.isAuthenticated() && !guestUniversalUnlocked()">
                   <span>Available codes:</span>
-                  <button type="button" (click)="quickApplyCoupon('WELCOME10')">WELCOME10</button>
-                  <button type="button" (click)="quickApplyCoupon('FASHION20')">FASHION20</button>
-                  <button type="button" (click)="quickApplyCoupon('FREESHIP15')">FREESHIP15</button>
+                  <button type="button" [disabled]="!auth.isAuthenticated() && !guestUniversalUnlocked()" (click)="quickApplyCoupon('WELCOME10')">WELCOME10</button>
+                  <button type="button" [disabled]="!auth.isAuthenticated() && !guestUniversalUnlocked()" (click)="quickApplyCoupon('FASHION20')">FASHION20</button>
+                  <button type="button" [disabled]="!auth.isAuthenticated() && !guestUniversalUnlocked()" (click)="quickApplyCoupon('FREESHIP15')">FREESHIP15</button>
                 </div>
                 @if (appliedCoupon()) {
                   <div class="promo-success">
@@ -450,6 +491,10 @@ import { BdtCurrencyPipe } from '../../../shared/pipes/bdt.pipe';
       border: 1px solid var(--color-border);
       border-radius: var(--radius-sm);
       p { font-size: 0.82rem; color: var(--color-text-muted); }
+      .guest-banner-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
     }
     .checkout-card {
       border: 1px solid var(--color-border);
@@ -595,15 +640,15 @@ import { BdtCurrencyPipe } from '../../../shared/pipes/bdt.pipe';
     .pm-badge-upay { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
 
     .advance-requirement-alert {
-      background: var(--color-gold-bg, #f9f3e8);
-      border: 1px solid var(--color-gold, #9a6b32);
+      background: var(--color-gold-bg, #fffbeb);
+      border: 1px solid var(--color-gold, #d97706);
       border-radius: var(--radius-sm);
       padding: 0.85rem 1rem;
       margin-bottom: 1.25rem;
       .adv-alert-title {
         font-weight: 700;
         font-size: 0.85rem;
-        color: var(--color-gold, #9a6b32);
+        color: var(--color-gold, #d97706);
         margin-bottom: 0.25rem;
       }
       .adv-alert-desc {
@@ -724,9 +769,97 @@ import { BdtCurrencyPipe } from '../../../shared/pipes/bdt.pipe';
       border-top: 1px solid var(--color-border);
       padding-top: 1rem;
     }
+    .guest-promo-banner {
+      background: var(--color-gold-bg);
+      border: 1px solid var(--color-gold);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 0.85rem;
+      margin-bottom: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+
+      .banner-content {
+        .banner-title {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          color: var(--color-onyx);
+          font-size: 0.82rem;
+          font-weight: 700;
+          letter-spacing: 0.02em;
+
+          .lock-icon {
+            color: var(--color-gold);
+            flex-shrink: 0;
+          }
+        }
+        p {
+          margin-top: 0.25rem;
+          font-size: 0.75rem;
+          color: var(--color-text-muted);
+          line-height: 1.35;
+        }
+
+        .universal-unlock-link {
+          display: inline;
+          background: none;
+          border: none;
+          padding: 0;
+          margin-left: 0.35rem;
+          font-size: 0.72rem;
+          font-weight: 700;
+          color: #2563eb;
+          text-decoration: underline;
+          cursor: pointer;
+          &:hover {
+            color: #1d4ed8;
+          }
+        }
+      }
+
+      .banner-actions {
+        display: flex;
+        gap: 0.5rem;
+
+        .btn-xs {
+          padding: 0.25rem 0.65rem;
+          font-size: 0.72rem;
+          font-weight: 600;
+          border-radius: var(--radius-sm);
+          text-decoration: none;
+          display: inline-block;
+        }
+        .btn-outline {
+          background: var(--color-white);
+          border: 1px solid var(--color-border);
+          color: var(--color-onyx);
+          &:hover {
+            border-color: var(--color-onyx);
+          }
+        }
+        .btn-primary {
+          background: var(--color-onyx);
+          color: var(--color-white);
+          &:hover {
+            background: var(--color-onyx-light);
+          }
+        }
+      }
+    }
     .promo-row {
       display: flex;
       gap: 0.5rem;
+
+      input:disabled {
+        background-color: var(--color-alabaster);
+        cursor: not-allowed;
+        color: var(--color-text-light);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
     }
     .promo-hints {
       display: flex;
@@ -737,6 +870,10 @@ import { BdtCurrencyPipe } from '../../../shared/pipes/bdt.pipe';
       font-size: 0.72rem;
       color: var(--color-text-muted);
 
+      &.disabled-hints {
+        opacity: 0.6;
+      }
+
       button {
         padding: 0.15rem 0.45rem;
         background: var(--color-white);
@@ -744,7 +881,11 @@ import { BdtCurrencyPipe } from '../../../shared/pipes/bdt.pipe';
         border-radius: 3px;
         font-size: 0.7rem;
         font-weight: 700;
-        &:hover { border-color: var(--color-onyx); }
+        &:hover:not(:disabled) { border-color: var(--color-onyx); }
+        &:disabled {
+          cursor: not-allowed;
+          opacity: 0.6;
+        }
       }
     }
     .promo-success {
@@ -821,6 +962,7 @@ export class CheckoutComponent implements OnInit {
   readonly selectedAddressId = signal<number | null>(null);
   readonly city = signal<string>('Dhaka');
   readonly appliedCoupon = signal<CouponValidationResult | null>(null);
+  readonly guestUniversalUnlocked = signal<boolean>(false);
   readonly submitting = signal<boolean>(false);
   readonly paymentProvider = signal<'cod' | 'bkash' | 'nagad' | 'rocket' | 'upay' | 'manual'>('cod');
 
@@ -939,7 +1081,7 @@ export class CheckoutComponent implements OnInit {
     });
 
     const user = this.auth.user();
-    if (user) {
+    if (this.auth.isAuthenticated() && user) {
       this.recipientName = user.full_name || '';
       this.phone = user.phone || '';
       this.orderService.getAddresses().subscribe({
@@ -951,6 +1093,9 @@ export class CheckoutComponent implements OnInit {
           }
         },
       });
+    } else {
+      this.appliedCoupon.set(null);
+      this.couponInput = '';
     }
   }
 
@@ -971,17 +1116,35 @@ export class CheckoutComponent implements OnInit {
     }
   }
 
+  unlockUniversalCoupon(): void {
+    this.guestUniversalUnlocked.set(true);
+    this.toast.info('You can now enter your universal promo code below.');
+  }
+
   quickApplyCoupon(code: string): void {
+    if (!this.auth.isAuthenticated() && !this.guestUniversalUnlocked()) {
+      this.toast.error('Please log in or create an account to unlock and apply coupon discounts.');
+      return;
+    }
     this.couponInput = code;
     this.validateCoupon();
   }
 
   validateCoupon(): void {
+    if (!this.auth.isAuthenticated() && !this.guestUniversalUnlocked()) {
+      this.toast.error('Please log in or create an account to unlock and apply coupon discounts.');
+      return;
+    }
     const code = this.couponInput.trim();
     if (!code) return;
     this.orderService.validateCoupon(code, this.cart.subtotal()).subscribe({
       next: (res) => {
         if (res.success && res.data) {
+          if (!this.auth.isAuthenticated() && !res.data.is_universal) {
+            this.appliedCoupon.set(null);
+            this.toast.error('This coupon is exclusive to registered members. Please sign in or register to unlock it.');
+            return;
+          }
           this.appliedCoupon.set(res.data);
           this.toast.success(`Promo code ${res.data.code} applied!`);
         }
@@ -1036,7 +1199,14 @@ export class CheckoutComponent implements OnInit {
       country: 'Bangladesh',
     };
 
-    const coupon_code = this.appliedCoupon()?.code || null;
+    // Ensure unauthenticated guests have zero coupon deductions unless universal coupon
+    if (!this.auth.isAuthenticated() && !this.appliedCoupon()?.is_universal) {
+      this.appliedCoupon.set(null);
+    }
+
+    const coupon_code = this.auth.isAuthenticated()
+      ? (this.appliedCoupon()?.code || null)
+      : (this.appliedCoupon()?.is_universal ? this.appliedCoupon()!.code : null);
     this.submitting.set(true);
 
     const paymentFields = provider === 'cod'
