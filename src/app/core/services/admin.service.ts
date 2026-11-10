@@ -15,6 +15,7 @@ import {
   ProductVariant,
   User,
 } from '../models/api.models';
+import { CouponMember } from '../models/coupon.model';
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
@@ -232,6 +233,31 @@ export class AdminService {
       }
     });
     return this.http.get<ApiResponse<CouponMemberUsageItem[]>>('/api/v1/coupons/member-usage', { params });
+  }
+
+  getCouponMembers(couponId: number): Observable<ApiResponse<CouponMember[]>> {
+    return this.http.get<ApiResponse<CouponMember[]>>(`/api/v1/coupons/${couponId}/members`);
+  }
+
+  addCouponMember(
+    couponId: number,
+    data: { user_id?: number; email?: string; usage_limit: number }
+  ): Observable<ApiResponse<CouponMember>> {
+    return this.http.post<ApiResponse<CouponMember>>(`/api/v1/coupons/${couponId}/members`, data);
+  }
+
+  updateCouponMemberLimit(
+    couponId: number,
+    userId: number,
+    usage_limit: number
+  ): Observable<ApiResponse<CouponMember>> {
+    return this.http.put<ApiResponse<CouponMember>>(`/api/v1/coupons/${couponId}/members/${userId}`, {
+      usage_limit,
+    });
+  }
+
+  removeCouponMember(couponId: number, userId: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`/api/v1/coupons/${couponId}/members/${userId}`);
   }
 
   // Reports & Payments

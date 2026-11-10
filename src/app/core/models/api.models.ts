@@ -95,6 +95,8 @@ export interface Product {
   sku?: string | null;
   short_description?: string | null;
   description?: string | null;
+  base_cost?: number | null;
+  profit_margin_percentage?: number | null;
   base_price: number;
   price: number;
   discount_price?: number | null;
@@ -377,10 +379,17 @@ export interface DashboardData {
   stats: {
     total_orders: number;
     total_revenue: number;
+    gross_revenue?: number;
     total_products: number;
+    total_variants?: number;
     total_customers: number;
     low_stock_count: number;
+    out_of_stock_count?: number;
     pending_orders: number;
+    total_investment?: number;
+    realized_profit?: number;
+    investment_amount?: number;
+    profit?: number;
   };
   recent_orders: Order[];
   top_products: Array<{

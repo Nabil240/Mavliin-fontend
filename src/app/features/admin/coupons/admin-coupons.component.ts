@@ -7,7 +7,9 @@ import {
   CouponMemberUsageItem,
   CouponMemberSummary,
   CouponPerformanceSummary,
+  User,
 } from '../../../core/models/api.models';
+import { CouponMember } from '../../../core/models/coupon.model';
 import { AdminService } from '../../../core/services/admin.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { BdtCurrencyPipe } from '../../../shared/pipes/bdt.pipe';
@@ -450,10 +452,11 @@ import { BdtCurrencyPipe } from '../../../shared/pipes/bdt.pipe';
                             type="button"
                             class="badge-toggle-btn"
                             (click)="toggleUniversalPermission(c)"
-                            [title]="c.is_universal ? 'Click to restrict to Members Only' : 'Click to give Universal Permission'"
+                            [title]="c.is_universal ? 'Click to restrict to Whitelisted Members' : 'Click to give Universal Permission'"
+                            data-testid="toggle-access-btn"
                           >
                             <span class="badge" [class]="c.is_universal ? 'badge-universal' : 'badge-member-only'">
-                              {{ c.is_universal ? '🌐 Universal (All)' : '🔒 Members Only' }}
+                              {{ c.is_universal ? '🌐 Universal' : '🔒 Restricted (Whitelisted)' }}
                             </span>
                           </button>
                         </td>
@@ -463,14 +466,25 @@ import { BdtCurrencyPipe } from '../../../shared/pipes/bdt.pipe';
                           </span>
                         </td>
                         <td>
-                          <button
-                            type="button"
-                            class="btn btn-danger btn-xs"
-                            (click)="deleteCoupon(c)"
-                            data-testid="delete-coupon-btn"
-                          >
-                            Delete
-                          </button>
+                          <div class="row-actions">
+                            <button
+                              type="button"
+                              class="btn btn-outline btn-xs"
+                              (click)="openWhitelistModal(c)"
+                              data-testid="open-whitelist-btn"
+                              title="Manage member whitelist"
+                            >
+                              👥 Whitelist
+                            </button>
+                            <button
+                              type="button"
+                              class="btn btn-danger btn-xs"
+                              (click)="deleteCoupon(c)"
+                              data-testid="delete-coupon-btn"
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     }
@@ -530,22 +544,310 @@ import { BdtCurrencyPipe } from '../../../shared/pipes/bdt.pipe';
                   placeholder="e.g. 100"
                 />
               </div>
-              <div class="form-group checkbox-group">
-                <label class="checkbox-label">
-                  <input
-                    type="checkbox"
-                    name="is_universal"
-                    [checked]="form.is_universal === 1"
-                    (change)="form.is_universal = $any($event.target).checked ? 1 : 0"
-                  />
-                  <span><strong>Universal Permission</strong> (Permit unauthenticated guests)</span>
-                </label>
-                <p class="form-hint">When enabled, guests can redeem this coupon during checkout without logging in.</p>
+              <div class="form-group">
+                <label class="form-label">Access Mode *</label>
+                <div class="access-mode-selector">
+                  <label class="radio-label">
+                    <input
+                      type="radio"
+                      name="is_universal"
+                      [value]="1"
+                      [checked]="form.is_universal === 1"
+                      (change)="form.is_universal = 1"
+                      data-testid="access-mode-universal"
+                    />
+                    <span><strong>🌐 Universal</strong> (All Customers &amp; Guests)</span>
+                  </label>
+                  <label class="radio-label">
+                    <input
+                      type="radio"
+                      name="is_universal"
+                      [value]="0"
+                      [checked]="form.is_universal === 0"
+                      (change)="form.is_universal = 0"
+                      data-testid="access-mode-restricted"
+                    />
+                    <span><strong>🔒 Member-Restricted</strong> (Whitelisted Members Only)</span>
+                  </label>
+                </div>
+                <p class="form-hint">
+                  Member-restricted coupons require assigning specific members and their custom limits via the Whitelist panel.
+                </p>
               </div>
               <button type="submit" class="btn btn-primary btn-sm btn-block">
                 Create Coupon
               </button>
             </form>
+          </div>
+        </div>
+      }
+
+      <!-- Coupon Whitelist & Member Access Modal -->
+      @if (whitelistModalOpen() && selectedCoupon(); as coupon) {
+        <div class="modal-backdrop" (click)="closeWhitelistModal()" data-testid="whitelist-modal-backdrop">
+          <div class="modal-card wide-modal" (click)="$event.stopPropagation()" data-testid="whitelist-modal">
+            <!-- Modal Header -->
+            <div class="modal-header">
+              <div class="modal-header-content">
+                <div class="modal-title-row">
+                  <h2 class="modal-title">
+                    Coupon Whitelist &amp; Access: <code class="coupon-code-badge">{{ coupon.code }}</code>
+                  </h2>
+                  <span
+                    class="badge"
+                    [class]="coupon.is_universal ? 'badge-universal' : 'badge-member-only'"
+                    data-testid="modal-access-badge"
+                  >
+                    {{ coupon.is_universal ? '🌐 Universal' : '🔒 Member-Restricted' }}
+                  </span>
+                  <span class="badge badge-neutral" data-testid="modal-member-count">
+                    👥 {{ whitelistMembers().length }} Members Assigned
+                  </span>
+                </div>
+                <p class="modal-subtitle">
+                  Discount: <strong>{{ coupon.discount_type === 'percentage' ? coupon.discount_value + '%' : (Number(coupon.discount_value) | bdt) }}</strong>
+                  &bull; Min Order: <strong>{{ Number(coupon.min_order_amount) | bdt }}</strong>
+                  &bull; Overall Usage: <strong>{{ coupon.used_count }} / {{ coupon.usage_limit || '∞' }}</strong>
+                </p>
+              </div>
+              <button
+                type="button"
+                class="close-btn"
+                (click)="closeWhitelistModal()"
+                aria-label="Close modal"
+                data-testid="close-whitelist-modal-btn"
+              >&times;</button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+              <!-- Access Mode Toggle inside Modal -->
+              <div class="modal-access-banner" [class.universal-mode]="coupon.is_universal">
+                <div class="banner-info">
+                  <span class="banner-icon">{{ coupon.is_universal ? '🌐' : '🔒' }}</span>
+                  <div class="banner-text">
+                    <strong>Access Mode: {{ coupon.is_universal ? 'Universal (All Customers)' : 'Restricted (Whitelisted Members Only)' }}</strong>
+                    <p>
+                      {{ coupon.is_universal
+                        ? 'All authenticated customers can redeem this coupon. Switch to Restricted to enforce member whitelists and per-member custom limits.'
+                        : 'Only specifically assigned members below can redeem this coupon. Each member is constrained by their individual custom usage limit.' }}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="btn btn-outline btn-xs"
+                  (click)="toggleUniversalPermission(coupon)"
+                  data-testid="modal-toggle-access-btn"
+                >
+                  Switch to {{ coupon.is_universal ? 'Member-Restricted' : 'Universal' }}
+                </button>
+              </div>
+
+              <!-- Assign Member Form Card -->
+              <div class="assign-member-card">
+                <h3 class="card-subtitle">Assign Whitelisted Member</h3>
+                <form (ngSubmit)="assignMember()" class="assign-form" data-testid="assign-member-form">
+                  <div class="assign-grid">
+                    <!-- Member User ID or Email with Autocomplete Typeahead -->
+                    <div class="form-group member-input-group">
+                      <label class="form-label" for="memberIdentifierInput">
+                        Member User ID or Email *
+                      </label>
+                      <div class="autocomplete-wrapper">
+                        <input
+                          id="memberIdentifierInput"
+                          type="text"
+                          class="form-control"
+                          [(ngModel)]="memberIdentifier"
+                          name="memberIdentifier"
+                          placeholder="Search customer name, email, or enter User ID..."
+                          (input)="onCustomerSearchInput($event)"
+                          (focus)="onCustomerInputFocus()"
+                          autocomplete="off"
+                          required
+                          data-testid="member-identifier-input"
+                        />
+                        @if (customerSearching()) {
+                          <span class="input-spinner">↻</span>
+                        }
+                        @if (showCustomerDropdown() && customerSearchResults().length > 0) {
+                          <ul class="typeahead-dropdown" data-testid="customer-typeahead-dropdown">
+                            @for (cust of customerSearchResults(); track cust.id) {
+                              <li
+                                class="typeahead-item"
+                                (click)="selectCustomer(cust)"
+                                data-testid="typeahead-item"
+                              >
+                                <span class="customer-avatar">👤</span>
+                                <div class="customer-details">
+                                  <strong class="customer-name">{{ cust.full_name || 'Customer' }}</strong>
+                                  <span class="customer-email">{{ cust.email }}</span>
+                                </div>
+                                <span class="customer-id-pill">ID #{{ cust.id }}</span>
+                              </li>
+                            }
+                          </ul>
+                        }
+                      </div>
+                      <span class="field-hint">Search by typing customer name/email or enter numeric User ID or email directly.</span>
+                    </div>
+
+                    <!-- Custom Usage Limit Input -->
+                    <div class="form-group limit-input-group">
+                      <label class="form-label" for="memberLimitInput">
+                        Custom Usage Limit *
+                      </label>
+                      <input
+                        id="memberLimitInput"
+                        type="number"
+                        min="1"
+                        step="1"
+                        class="form-control"
+                        [(ngModel)]="memberUsageLimit"
+                        name="memberUsageLimit"
+                        placeholder="1"
+                        required
+                        data-testid="member-limit-input"
+                      />
+                      <span class="field-hint">Max allowed redemptions for this member (default: 1).</span>
+                    </div>
+
+                    <!-- Assign Button -->
+                    <div class="form-group action-group">
+                      <button
+                        type="submit"
+                        class="btn btn-primary"
+                        [disabled]="assigningMember() || !memberIdentifier.trim()"
+                        data-testid="assign-member-btn"
+                      >
+                        {{ assigningMember() ? 'Assigning...' : '+ Assign Member' }}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <!-- Whitelisted Members Table Card -->
+              <div class="whitelist-table-card">
+                <div class="whitelist-table-header">
+                  <h3 class="card-subtitle">
+                    Assigned Whitelist Members ({{ whitelistMembers().length }})
+                  </h3>
+                  @if (whitelistLoading()) {
+                    <span class="loading-indicator">Loading members...</span>
+                  }
+                </div>
+
+                @if (whitelistLoading()) {
+                  <div class="skeleton-loader">
+                    <div class="spinner"></div>
+                    <p>Loading whitelisted members...</p>
+                  </div>
+                } @else if (whitelistMembers().length === 0) {
+                  <div class="empty-whitelist-state" data-testid="empty-whitelist-message">
+                    <span class="empty-icon">👥</span>
+                    <h4>No Whitelisted Members Assigned</h4>
+                    <p>
+                      When set to Member-Restricted, redemptions will be blocked until members are assigned above.
+                    </p>
+                  </div>
+                } @else {
+                  <div class="table-responsive">
+                    <table class="admin-table whitelist-table" data-testid="whitelist-members-table">
+                      <thead>
+                        <tr>
+                          <th>Member</th>
+                          <th>User ID</th>
+                          <th>Usage Count</th>
+                          <th>Custom Limit</th>
+                          <th>Remaining Uses</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (m of whitelistMembers(); track m.user_id) {
+                          <tr [attr.data-testid]="'whitelist-row-' + m.user_id">
+                            <td>
+                              <div class="member-identity">
+                                <strong>{{ m.customer_name || 'Customer' }}</strong>
+                                <span class="text-muted">{{ m.customer_email || 'No email' }}</span>
+                              </div>
+                            </td>
+                            <td>
+                              <span class="badge badge-id">#{{ m.user_id }}</span>
+                            </td>
+                            <td>
+                              <span class="usage-count-badge" data-testid="member-used-count">
+                                🎟️ {{ m.used_count }} {{ m.used_count === 1 ? 'use' : 'uses' }}
+                              </span>
+                            </td>
+                            <td>
+                              <div class="limit-edit-cell">
+                                <input
+                                  type="number"
+                                  min="1"
+                                  step="1"
+                                  class="form-control limit-input"
+                                  [value]="editingLimits[m.user_id] ?? m.usage_limit"
+                                  (input)="onLimitChange(m.user_id, $event)"
+                                  [disabled]="savingLimitUserId() === m.user_id"
+                                  data-testid="custom-limit-input"
+                                />
+                                <button
+                                  type="button"
+                                  class="btn btn-outline btn-xs"
+                                  (click)="saveMemberLimit(m)"
+                                  [disabled]="savingLimitUserId() === m.user_id || (editingLimits[m.user_id] !== undefined && editingLimits[m.user_id] === m.usage_limit)"
+                                  data-testid="save-limit-btn"
+                                  title="Save custom limit"
+                                >
+                                  {{ savingLimitUserId() === m.user_id ? '...' : '✓ Save' }}
+                                </button>
+                              </div>
+                            </td>
+                            <td>
+                              @let remaining = m.remaining_uses !== undefined ? m.remaining_uses : ((m.usage_limit - m.used_count) > 0 ? (m.usage_limit - m.used_count) : 0);
+                              <span
+                                class="badge"
+                                [class]="remaining > 0 ? 'badge-stock' : 'badge-danger'"
+                                data-testid="member-remaining-badge"
+                              >
+                                {{ remaining > 0 ? (remaining + ' left') : 'Exhausted' }}
+                              </span>
+                            </td>
+                            <td>
+                              <button
+                                type="button"
+                                class="btn btn-danger btn-xs"
+                                (click)="removeMember(m)"
+                                [disabled]="removingUserId() === m.user_id"
+                                data-testid="remove-member-btn"
+                                title="Remove member from whitelist"
+                              >
+                                {{ removingUserId() === m.user_id ? 'Removing...' : 'Remove' }}
+                              </button>
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-secondary btn-sm"
+                (click)="closeWhitelistModal()"
+                data-testid="modal-done-btn"
+              >
+                Done
+              </button>
+            </div>
           </div>
         </div>
       }
@@ -1170,6 +1472,392 @@ import { BdtCurrencyPipe } from '../../../shared/pipes/bdt.pipe';
       margin: 0 auto 0.75rem auto;
       animation: spin 0.8s linear infinite;
     }
+
+    /* Modal Styling */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 6px;
+      width: 100%;
+      max-width: 640px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      border: 1px solid #e2e8f0;
+      animation: modalFadeIn 0.2s ease-out;
+    }
+
+    .modal-card.wide-modal {
+      max-width: 920px;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      background: #fafafa;
+    }
+
+    .modal-header-content {
+      flex: 1;
+    }
+
+    .modal-title-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0;
+    }
+
+    .coupon-code-badge {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 0.15rem 0.45rem;
+      border-radius: 3px;
+      font-size: 0.9em;
+      font-family: monospace;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .badge-neutral {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    .badge-id {
+      background: #e2e8f0;
+      color: #334155;
+      font-family: monospace;
+      font-size: 0.75rem;
+      padding: 0.15rem 0.4rem;
+    }
+
+    .modal-subtitle {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin: 0.35rem 0 0 0;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.5rem;
+      line-height: 1;
+      cursor: pointer;
+      color: #64748b;
+      padding: 0 0.25rem;
+      &:hover { color: #0f172a; }
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: flex-end;
+      background: #fafafa;
+    }
+
+    .modal-access-banner {
+      padding: 0.875rem 1rem;
+      border-radius: 4px;
+      background: #fef2f2;
+      border: 1px solid #fee2e2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .modal-access-banner.universal-mode {
+      background: #eff6ff;
+      border-color: #dbeafe;
+    }
+
+    .banner-info {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .banner-icon {
+      font-size: 1.25rem;
+      line-height: 1.2;
+    }
+
+    .banner-text {
+      strong {
+        font-size: 0.875rem;
+        color: #0f172a;
+        display: block;
+        margin-bottom: 0.2rem;
+      }
+      p {
+        font-size: 0.78rem;
+        color: #475569;
+        margin: 0;
+        line-height: 1.4;
+      }
+    }
+
+    .assign-member-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 1.15rem 1.25rem;
+    }
+
+    .card-subtitle {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin: 0 0 0.85rem 0;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .assign-form {
+      display: block;
+    }
+
+    .assign-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr auto;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .member-input-group {
+      margin-bottom: 0;
+    }
+
+    .limit-input-group {
+      margin-bottom: 0;
+    }
+
+    .action-group {
+      margin-bottom: 0;
+      padding-top: 1.55rem;
+    }
+
+    .autocomplete-wrapper {
+      position: relative;
+    }
+
+    .input-spinner {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.85rem;
+      color: #64748b;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .typeahead-dropdown {
+      position: absolute;
+      top: calc(100% + 2px);
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 1050;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .typeahead-item {
+      padding: 0.6rem 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      border-bottom: 1px solid #f1f5f9;
+      transition: background 0.15s ease;
+      &:last-child { border-bottom: none; }
+      &:hover { background: #f8fafc; }
+    }
+
+    .customer-avatar {
+      font-size: 1.1rem;
+    }
+
+    .customer-details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .customer-name {
+      font-size: 0.82rem;
+      color: #0f172a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .customer-email {
+      font-size: 0.75rem;
+      color: #64748b;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .customer-id-pill {
+      font-size: 0.72rem;
+      font-family: monospace;
+      background: #e2e8f0;
+      color: #334155;
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+    }
+
+    .field-hint {
+      display: block;
+      font-size: 0.72rem;
+      color: #64748b;
+      margin-top: 0.35rem;
+    }
+
+    .whitelist-table-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 1.15rem 1.25rem;
+    }
+
+    .whitelist-table-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      .card-subtitle { margin-bottom: 0; }
+    }
+
+    .loading-indicator {
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+
+    .whitelist-table {
+      margin-top: 0.5rem;
+      th { font-size: 0.75rem; }
+      td { font-size: 0.82rem; vertical-align: middle; }
+    }
+
+    .member-identity {
+      display: flex;
+      flex-direction: column;
+      strong { font-size: 0.85rem; color: #0f172a; }
+      .text-muted { font-size: 0.75rem; color: #64748b; }
+    }
+
+    .usage-count-badge {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    .limit-edit-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .limit-input {
+      width: 70px;
+      padding: 0.25rem 0.4rem;
+      font-size: 0.82rem;
+      height: 30px;
+    }
+
+    .empty-whitelist-state {
+      padding: 2.5rem 1rem;
+      text-align: center;
+      background: #fafafa;
+      border: 1px dashed #cbd5e1;
+      border-radius: 6px;
+      .empty-icon { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
+      h4 { font-size: 0.95rem; font-weight: 700; color: #0f172a; margin: 0 0 0.35rem 0; }
+      p { font-size: 0.8rem; color: #64748b; margin: 0; max-width: 480px; margin: 0 auto; }
+    }
+
+    .skeleton-loader {
+      padding: 2rem 1rem;
+      text-align: center;
+      color: #64748b;
+      p { font-size: 0.85rem; margin: 0.5rem 0 0 0; }
+    }
+
+    .row-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .access-mode-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0.35rem;
+      padding: 0.75rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      color: #1e293b;
+    }
   `],
 })
 export class AdminCouponsComponent implements OnInit {
@@ -1194,6 +1882,28 @@ export class AdminCouponsComponent implements OnInit {
   readonly memberSearch = signal<string>('');
   readonly ledgerSearch = signal<string>('');
   readonly ledgerCouponFilter = signal<string>('');
+
+  // Whitelist Modal State
+  readonly whitelistModalOpen = signal<boolean>(false);
+  readonly selectedCoupon = signal<Coupon | null>(null);
+  readonly whitelistMembers = signal<CouponMember[]>([]);
+  readonly whitelistLoading = signal<boolean>(false);
+  readonly assigningMember = signal<boolean>(false);
+
+  // Assign Member Form
+  memberIdentifier = '';
+  memberUsageLimit: number = 1;
+
+  // Customer Autocomplete Typeahead
+  readonly customerSearchResults = signal<User[]>([]);
+  readonly customerSearching = signal<boolean>(false);
+  readonly showCustomerDropdown = signal<boolean>(false);
+  private customerSearchTimeout: any = null;
+
+  // Inline Custom Limit Editing State
+  readonly editingLimits: { [userId: number]: number } = {};
+  readonly savingLimitUserId = signal<number | null>(null);
+  readonly removingUserId = signal<number | null>(null);
 
   // Form for Coupon Creation
   form: {
@@ -1347,12 +2057,193 @@ export class AdminCouponsComponent implements OnInit {
     const nextVal = c.is_universal ? 0 : 1;
     this.adminService.updateCoupon(c.id, { is_universal: nextVal }).subscribe({
       next: () => {
-        const label = nextVal === 1 ? 'Universal (Guests & Members)' : 'Members Only';
+        const label = nextVal === 1 ? 'Universal' : 'Restricted (Whitelisted)';
         this.toast.success(`Coupon "${c.code}" permission updated to ${label}.`);
+        c.is_universal = nextVal;
+        if (this.selectedCoupon()?.id === c.id) {
+          this.selectedCoupon.set({ ...c, is_universal: nextVal });
+        }
         this.loadCoupons();
         this.loadAnalytics();
       },
       error: (err) => this.toast.error(err?.error?.message || 'Could not update coupon permission.'),
+    });
+  }
+
+  openWhitelistModal(c: Coupon): void {
+    this.selectedCoupon.set(c);
+    this.whitelistModalOpen.set(true);
+    this.memberIdentifier = '';
+    this.memberUsageLimit = 1;
+    this.showCustomerDropdown.set(false);
+    this.customerSearchResults.set([]);
+    this.loadCouponMembers(c.id);
+  }
+
+  closeWhitelistModal(): void {
+    this.whitelistModalOpen.set(false);
+    this.selectedCoupon.set(null);
+    this.whitelistMembers.set([]);
+    this.showCustomerDropdown.set(false);
+    this.customerSearchResults.set([]);
+    if (this.customerSearchTimeout) {
+      clearTimeout(this.customerSearchTimeout);
+    }
+  }
+
+  loadCouponMembers(couponId: number): void {
+    this.whitelistLoading.set(true);
+    this.adminService.getCouponMembers(couponId).subscribe({
+      next: (res) => {
+        this.whitelistLoading.set(false);
+        if (res.success && Array.isArray(res.data)) {
+          this.whitelistMembers.set(res.data);
+          res.data.forEach((m) => {
+            this.editingLimits[m.user_id] = m.usage_limit;
+          });
+        }
+      },
+      error: () => {
+        this.whitelistLoading.set(false);
+        this.toast.error('Failed to load whitelisted members.');
+      },
+    });
+  }
+
+  onCustomerSearchInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const query = (input?.value || '').trim();
+    this.memberIdentifier = query;
+
+    if (this.customerSearchTimeout) {
+      clearTimeout(this.customerSearchTimeout);
+    }
+
+    if (query.length < 2) {
+      this.showCustomerDropdown.set(false);
+      this.customerSearchResults.set([]);
+      return;
+    }
+
+    this.customerSearchTimeout = setTimeout(() => {
+      this.customerSearching.set(true);
+      this.adminService.getCustomers({ search: query, limit: 8 }).subscribe({
+        next: (res) => {
+          this.customerSearching.set(false);
+          if (res.success && Array.isArray(res.data)) {
+            this.customerSearchResults.set(res.data);
+            this.showCustomerDropdown.set(res.data.length > 0);
+          }
+        },
+        error: () => {
+          this.customerSearching.set(false);
+        },
+      });
+    }, 250);
+  }
+
+  onCustomerInputFocus(): void {
+    if (this.customerSearchResults().length > 0) {
+      this.showCustomerDropdown.set(true);
+    }
+  }
+
+  selectCustomer(cust: User): void {
+    this.memberIdentifier = cust.email || String(cust.id);
+    this.showCustomerDropdown.set(false);
+  }
+
+  assignMember(): void {
+    const coupon = this.selectedCoupon();
+    if (!coupon) return;
+
+    const raw = this.memberIdentifier.trim();
+    if (!raw) {
+      this.toast.info('Please enter a User ID or Email.');
+      return;
+    }
+
+    const limit = Math.max(1, Math.floor(Number(this.memberUsageLimit) || 1));
+    const isNumericId = /^\d+$/.test(raw);
+    const payload = isNumericId
+      ? { user_id: parseInt(raw, 10), usage_limit: limit }
+      : { email: raw, usage_limit: limit };
+
+    this.assigningMember.set(true);
+    this.adminService.addCouponMember(coupon.id, payload).subscribe({
+      next: (res) => {
+        this.assigningMember.set(false);
+        this.toast.success(res?.message || 'Member assigned to whitelist successfully.');
+        this.memberIdentifier = '';
+        this.memberUsageLimit = 1;
+        this.showCustomerDropdown.set(false);
+        this.loadCouponMembers(coupon.id);
+      },
+      error: (err) => {
+        this.assigningMember.set(false);
+        const status = err?.status;
+        if (status === 409) {
+          this.toast.error(err?.error?.message || 'Member is already whitelisted for this coupon.');
+        } else if (status === 404) {
+          this.toast.error(err?.error?.message || 'User not found. Please verify the User ID or Email.');
+        } else {
+          this.toast.error(err?.error?.message || 'Could not assign member to whitelist.');
+        }
+      },
+    });
+  }
+
+  onLimitChange(userId: number, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const val = Number(input?.value);
+    if (!isNaN(val) && val >= 1) {
+      this.editingLimits[userId] = val;
+    }
+  }
+
+  saveMemberLimit(member: CouponMember): void {
+    const coupon = this.selectedCoupon();
+    if (!coupon) return;
+
+    const rawVal = this.editingLimits[member.user_id] ?? member.usage_limit;
+    const newLimit = Math.max(1, Math.floor(Number(rawVal) || 1));
+
+    this.savingLimitUserId.set(member.user_id);
+    this.adminService.updateCouponMemberLimit(coupon.id, member.user_id, newLimit).subscribe({
+      next: () => {
+        this.savingLimitUserId.set(null);
+        this.toast.success('Custom usage limit updated successfully.');
+        member.usage_limit = newLimit;
+        member.remaining_uses = Math.max(0, newLimit - member.used_count);
+        delete this.editingLimits[member.user_id];
+        this.whitelistMembers.set([...this.whitelistMembers()]);
+      },
+      error: (err) => {
+        this.savingLimitUserId.set(null);
+        this.toast.error(err?.error?.message || 'Failed to update member usage limit.');
+      },
+    });
+  }
+
+  removeMember(member: CouponMember): void {
+    const coupon = this.selectedCoupon();
+    if (!coupon) return;
+
+    if (!confirm(`Remove ${member.customer_name || 'member'} from ${coupon.code} whitelist?`)) {
+      return;
+    }
+
+    this.removingUserId.set(member.user_id);
+    this.adminService.removeCouponMember(coupon.id, member.user_id).subscribe({
+      next: (res) => {
+        this.removingUserId.set(null);
+        this.toast.success(res?.message || 'Member removed from whitelist successfully.');
+        this.whitelistMembers.set(this.whitelistMembers().filter((m) => m.user_id !== member.user_id));
+      },
+      error: (err) => {
+        this.removingUserId.set(null);
+        this.toast.error(err?.error?.message || 'Could not remove member from whitelist.');
+      },
     });
   }
 }

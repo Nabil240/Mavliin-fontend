@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Category, Product, ProductVariant } from '../../../../core/models/api.models';
 import { AdminService } from '../../../../core/services/admin.service';
 import { ToastService } from '../../../../core/services/toast.service';
+import { BdtCurrencyPipe } from '../../../../shared/pipes/bdt.pipe';
 
 interface FormVariantRow {
   id?: number;
@@ -20,7 +21,7 @@ interface FormVariantRow {
 @Component({
   selector: 'app-product-form',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, BdtCurrencyPipe],
   template: `
     <div class="product-form-page">
       <div class="page-head">
@@ -43,7 +44,7 @@ interface FormVariantRow {
           <button
             type="button"
             class="btn btn-primary btn-sm"
-            [disabled]="saving() || !form.name.trim() || variants.length === 0"
+            [disabled]="saving() || !form.name.trim() || variants.length === 0 || !isPricingValid"
             (click)="saveProduct()"
           >
             {{ saving() ? 'Saving Product...' : (isEditMode() ? 'Update Garment' : 'Publish Product') }}
@@ -96,27 +97,99 @@ interface FormVariantRow {
               </div>
             </div>
 
+            <!-- PRICING & COST-PLUS STRATEGY -->
+            <!-- MODULE 1: COST-PLUS OPTIMAL PRICE CALCULATOR (R1) -->
+            <div class="calculator-panel">
+              <div class="calc-header">
+                <span class="calc-badge">COST-PLUS MARGIN CALCULATOR</span>
+                <span class="calc-sub">Estimate recommended price based on garment production cost</span>
+              </div>
+
+              <div class="calc-grid">
+                <div class="form-group">
+                  <label class="form-label" for="calcBaseCost">Base Production Cost (৳)</label>
+                  <input
+                    id="calcBaseCost"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    class="form-control"
+                    name="base_cost"
+                    [(ngModel)]="form.base_cost"
+                    (ngModelChange)="onCostOrMarginChange()"
+                    placeholder="e.g. 850.00"
+                  />
+                  <small class="form-text-hint">Direct manufacturing / wholesale acquisition cost</small>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="calcProfitMargin">Desired Profit Margin (%)</label>
+                  <input
+                    id="calcProfitMargin"
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    class="form-control"
+                    name="profit_margin_percentage"
+                    [(ngModel)]="form.profit_margin_percentage"
+                    (ngModelChange)="onCostOrMarginChange()"
+                    placeholder="e.g. 25"
+                  />
+                  <small class="form-text-hint">Markup margin percentage to apply over cost</small>
+                </div>
+
+                <div class="calc-result-tile">
+                  <div class="result-label">Recommended Optimal Price</div>
+                  <div class="result-price tabular-price" id="calcOptimalPriceVal">{{ calculatedOptimalPrice | bdt:true }}</div>
+                  <div class="result-actions">
+                    <button
+                      type="button"
+                      id="btnApplyOptimalPrice"
+                      class="btn btn-secondary btn-xs btn-apply-optimal"
+                      [disabled]="calculatedOptimalPrice <= 0"
+                      (click)="applyOptimalPrice()"
+                      title="Populate base selling price with optimal price"
+                    >
+                      Apply to Selling Price &rarr;
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              @if (form.base_cost && form.base_cost > 0) {
+                <div class="calc-breakdown-row">
+                  <span>Cost: <strong>{{ form.base_cost | bdt:true }}</strong></span>
+                  <span>+ Margin ({{ form.profit_margin_percentage || 0 }}%): <strong>{{ (calculatedOptimalPrice - (form.base_cost || 0)) | bdt:true }}</strong></span>
+                  <span>= Optimal Price: <strong class="text-emerald">{{ calculatedOptimalPrice | bdt:true }}</strong></span>
+                </div>
+              }
+            </div>
+
+            <!-- MODULE 2: CATALOG SELLING PRICE & COMPARE PRICE -->
             <div class="form-row-2">
               <div class="form-group">
-                <label class="form-label" for="prodBasePrice">Base Price (৳) *</label>
+                <label class="form-label" for="prodBasePrice">Base Selling Price (৳) *</label>
                 <input
                   id="prodBasePrice"
                   type="number"
                   step="0.01"
+                  min="0"
                   class="form-control"
                   name="base_price"
                   [(ngModel)]="form.base_price"
+                  (ngModelChange)="onSellingPriceChange()"
                   placeholder="1250"
                   required
                 />
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="prodCompPrice">Compare At Price (৳) (Optional)</label>
+                <label class="form-label" for="prodCompPrice">Compare At Price (৳) (Optional MSRP)</label>
                 <input
                   id="prodCompPrice"
                   type="number"
                   step="0.01"
+                  min="0"
                   class="form-control"
                   name="compare_at_price"
                   [(ngModel)]="form.compare_at_price"
@@ -125,6 +198,7 @@ interface FormVariantRow {
               </div>
             </div>
 
+            <!-- MODULE 3: PROMOTIONAL DISCOUNT CONFIGURATION -->
             <div class="form-row-2">
               <div class="form-group">
                 <label class="form-label" for="prodDiscountType">Promotional Discount Type</label>
@@ -154,16 +228,61 @@ interface FormVariantRow {
               }
             </div>
 
-            @if (form.discount_type !== 'none') {
-              <div class="discount-preview-card">
-                <div class="dp-header">Live Discount Preview</div>
-                <div class="dp-row">
-                  <span>Base Price: <strong>৳{{ form.base_price }}</strong></span>
-                  <span>Effective Discounted Price: <strong class="text-emerald">৳{{ calculatedDiscountPrice }}</strong></span>
-                  <span>Savings: <strong>৳{{ (form.base_price - calculatedDiscountPrice) | number:'1.2-2' }}</strong></span>
+            <!-- MODULE 4: REAL-TIME SELLING PRICE & DISCOUNT OVERVIEW (R2) -->
+            <div class="pricing-overview-card discount-preview-card" [class.has-error]="!isPricingValid">
+              <div class="overview-head">
+                <div class="oh-title">
+                  <span class="pulse-indicator"></span>
+                  REAL-TIME SELLING PRICE &amp; DISCOUNT OVERVIEW
+                </div>
+                <div class="oh-badge" [class.badge-active]="form.discount_type !== 'none'">
+                  {{ form.discount_type === 'none' ? 'Standard Pricing' : (form.discount_type === 'percentage' ? 'Percentage Promo' : 'Fixed Promo') }}
                 </div>
               </div>
-            }
+
+              <div class="overview-kpi-grid">
+                <div class="kpi-cell kpi-base-price">
+                  <span class="kpi-label">Base Selling Price</span>
+                  <span class="kpi-value tabular-price" id="overviewBasePrice">{{ form.base_price | bdt:true }}</span>
+                </div>
+
+                <div class="kpi-cell kpi-discount">
+                  <span class="kpi-label">Applied Discount</span>
+                  <span class="kpi-value tabular-price" id="overviewDiscount" [class.text-berry]="appliedDiscountAmount > 0">
+                    @if (form.discount_type === 'percentage') {
+                      -{{ form.discount_value }}% ({{ appliedDiscountAmount | bdt:true }})
+                    } @else if (form.discount_type === 'fixed') {
+                      -{{ appliedDiscountAmount | bdt:true }}
+                    } @else {
+                      {{ 0 | bdt:true }} (None)
+                    }
+                  </span>
+                </div>
+
+                <div class="kpi-cell highlight-cell kpi-final-price">
+                  <span class="kpi-label">Final Sale Price</span>
+                  <span class="kpi-value kpi-final tabular-price text-emerald" id="overviewFinalPrice">
+                    {{ finalSalePrice | bdt:true }}
+                  </span>
+                </div>
+
+                @if (form.base_cost && form.base_cost > 0) {
+                  <div class="kpi-cell profit-cell">
+                    <span class="kpi-label">Estimated Unit Profit</span>
+                    <span class="kpi-value tabular-price" [class.text-emerald]="(finalSalePrice - form.base_cost) >= 0" [class.text-berry]="(finalSalePrice - form.base_cost) < 0">
+                      {{ (finalSalePrice - form.base_cost) | bdt:true }}
+                      <small>({{ ((finalSalePrice - form.base_cost) / form.base_cost * 100) | number:'1.1-1' }}%)</small>
+                    </span>
+                  </div>
+                }
+              </div>
+
+              @if (!isPricingValid) {
+                <div class="overview-warning-bar">
+                  <strong>Validation Alert:</strong> {{ pricingErrorMessage }}
+                </div>
+              }
+            </div>
 
             <div class="form-group" style="margin-bottom: 1.25rem;">
               <label class="form-label" for="prodAdvanceType">Advance Payment Requirement Policy</label>
@@ -615,29 +734,179 @@ interface FormVariantRow {
       border-radius: 2px;
     }
 
-    .discount-preview-card {
-      background: var(--color-gold-bg, #fffbeb);
-      border: 1px dashed var(--color-gold, #d97706);
+    .calculator-panel {
+      background: var(--color-alabaster, #f1f5f9);
+      border: 1px dashed var(--color-border-dark, #cbd5e1);
       border-radius: var(--radius-sm, 4px);
-      padding: 0.75rem 1rem;
-      margin-bottom: 1rem;
-      .dp-header {
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--color-gold, #d97706);
-        margin-bottom: 0.35rem;
+      padding: 1rem 1.25rem;
+      margin-top: 1rem;
+      margin-bottom: 1.25rem;
+
+      .calc-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+        .calc-badge {
+          font-size: 0.68rem;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          background: var(--color-onyx, #18181b);
+          color: var(--color-white, #ffffff);
+          padding: 0.2rem 0.5rem;
+          border-radius: 2px;
+        }
+        .calc-sub {
+          font-size: 0.75rem;
+          color: var(--color-text-muted, #64748b);
+        }
       }
-      .dp-row {
+
+      .calc-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 1rem;
+        align-items: flex-start;
+
+        @media (max-width: 768px) {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .calc-result-tile {
+        background: var(--color-white, #ffffff);
+        border: 1px solid var(--color-border, #e2e8f0);
+        border-radius: var(--radius-sm, 4px);
+        padding: 0.75rem 1rem;
+        min-width: 200px;
+        text-align: right;
+
+        .result-label {
+          font-size: 0.7rem;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: var(--color-text-muted, #64748b);
+        }
+        .result-price {
+          font-size: 1.35rem;
+          font-weight: 700;
+          color: var(--color-onyx, #18181b);
+          margin: 0.2rem 0 0.4rem;
+        }
+      }
+
+      .calc-breakdown-row {
+        margin-top: 0.75rem;
+        padding-top: 0.5rem;
+        border-top: 1px dotted var(--color-border, #e2e8f0);
+        font-size: 0.78rem;
         display: flex;
         flex-wrap: wrap;
         gap: 1.25rem;
-        font-size: 0.85rem;
+        color: var(--color-text, #18181b);
       }
-      .text-emerald {
-        color: var(--color-emerald, #059669);
+    }
+
+    .pricing-overview-card {
+      background: var(--color-ivory, #f8fafc);
+      border: 1px solid var(--color-border, #e2e8f0);
+      border-radius: var(--radius-sm, 4px);
+      padding: 1rem 1.25rem;
+      margin-top: 1.25rem;
+      margin-bottom: 1.25rem;
+
+      &.has-error {
+        border-color: var(--color-berry, #e11d48);
+        background: var(--color-berry-bg, #fff1f2);
       }
+
+      .overview-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.85rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--color-border, #e2e8f0);
+
+        .oh-title {
+          font-size: 0.75rem;
+          font-weight: 700;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: var(--color-onyx, #18181b);
+        }
+        .pulse-indicator {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: var(--color-emerald, #059669);
+          display: inline-block;
+        }
+        .oh-badge {
+          font-size: 0.7rem;
+          font-weight: 600;
+          padding: 0.15rem 0.5rem;
+          border-radius: 2px;
+          background: var(--color-alabaster, #f1f5f9);
+          color: var(--color-text-muted, #64748b);
+          &.badge-active {
+            background: var(--color-gold-bg, #fffbeb);
+            color: var(--color-gold, #d97706);
+          }
+        }
+      }
+
+      .overview-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 1rem;
+
+        .kpi-cell {
+          display: flex;
+          flex-direction: column;
+          gap: 0.2rem;
+
+          .kpi-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--color-text-muted, #64748b);
+          }
+          .kpi-value {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--color-onyx, #18181b);
+          }
+          .kpi-final {
+            font-size: 1.35rem;
+            color: var(--color-emerald, #059669);
+          }
+        }
+      }
+
+      .overview-warning-bar {
+        margin-top: 0.75rem;
+        padding: 0.5rem 0.75rem;
+        background: var(--color-berry-bg, #fff1f2);
+        border-left: 3px solid var(--color-berry, #e11d48);
+        color: var(--color-berry, #e11d48);
+        font-size: 0.78rem;
+        border-radius: 2px;
+      }
+    }
+
+    .text-emerald {
+      color: var(--color-emerald, #059669);
+    }
+    .text-berry {
+      color: var(--color-berry, #e11d48);
+    }
+    .tabular-price {
+      font-variant-numeric: tabular-nums;
     }
 
     .form-text-hint {
@@ -665,6 +934,8 @@ export class ProductFormComponent implements OnInit {
     name: string;
     slug: string;
     category_id: number | null;
+    base_cost?: number | null;
+    profit_margin_percentage?: number | null;
     base_price: number;
     compare_at_price: number | null;
     discount_type: 'none' | 'percentage' | 'fixed';
@@ -680,6 +951,8 @@ export class ProductFormComponent implements OnInit {
     name: '',
     slug: '',
     category_id: null,
+    base_cost: null,
+    profit_margin_percentage: 25,
     base_price: 80,
     compare_at_price: null,
     discount_type: 'none',
@@ -693,18 +966,122 @@ export class ProductFormComponent implements OnInit {
     is_featured: false,
   };
 
-  get calculatedDiscountPrice(): number {
+  // Direct accessors for convenience & test/backward compatibility
+  get baseCost(): number | null {
+    return this.form.base_cost ?? null;
+  }
+  set baseCost(val: number | null) {
+    this.form.base_cost = val;
+  }
+
+  get base_cost(): number | null {
+    return this.form.base_cost ?? null;
+  }
+  set base_cost(val: number | null) {
+    this.form.base_cost = val;
+  }
+
+  get profitMarginPercent(): number | null {
+    return this.form.profit_margin_percentage ?? null;
+  }
+  set profitMarginPercent(val: number | null) {
+    this.form.profit_margin_percentage = val;
+  }
+
+  get profit_margin_percentage(): number | null {
+    return this.form.profit_margin_percentage ?? null;
+  }
+  set profit_margin_percentage(val: number | null) {
+    this.form.profit_margin_percentage = val;
+  }
+
+  // R1: Optimal Price Calculation (Cost-Plus Margin)
+  get calculatedOptimalPrice(): number {
+    const cost = Number(this.form.base_cost) || 0;
+    const margin = Number(this.form.profit_margin_percentage) || 0;
+    if (cost <= 0) return 0;
+    const price = cost * (1 + Math.max(0, margin) / 100);
+    return Math.round(price * 100) / 100;
+  }
+
+  get optimalPrice(): number {
+    return this.calculatedOptimalPrice;
+  }
+
+  applyOptimalPrice(): void {
+    if (this.calculatedOptimalPrice > 0) {
+      this.form.base_price = this.calculatedOptimalPrice;
+      if (this.variants.length === 1) {
+        this.variants[0].price = this.calculatedOptimalPrice;
+      }
+      this.toast.success(`Optimal price ৳${this.calculatedOptimalPrice.toFixed(2)} applied to selling price.`);
+    }
+  }
+
+  onCostOrMarginChange(): void {
+    // Dynamic change hook
+  }
+
+  onSellingPriceChange(): void {
+    if (this.variants.length === 1 && !this.isEditMode()) {
+      this.variants[0].price = Number(this.form.base_price) || 0;
+    }
+  }
+
+  // R2: Real-time Selling Price & Discount Overview Getters
+  get appliedDiscountAmount(): number {
     const base = Number(this.form.base_price) || 0;
     const type = this.form.discount_type;
     const val = Number(this.form.discount_value) || 0;
     if (type === 'percentage') {
-      const clamped = Math.max(0, Math.min(100, val));
-      return Math.max(0, Math.round(base * (1 - clamped / 100) * 100) / 100);
+      const clampedPercent = Math.max(0, Math.min(100, val));
+      return Math.round(base * (clampedPercent / 100) * 100) / 100;
     }
     if (type === 'fixed') {
-      return Math.max(0, Math.round((base - val) * 100) / 100);
+      return Math.min(base, Math.max(0, Math.round(val * 100) / 100));
     }
-    return base;
+    return 0;
+  }
+
+  get finalSalePrice(): number {
+    const base = Number(this.form.base_price) || 0;
+    return Math.max(0, Math.round((base - this.appliedDiscountAmount) * 100) / 100);
+  }
+
+  // Pricing Validation
+  get pricingErrorMessage(): string | null {
+    const base = Number(this.form.base_price);
+    if (isNaN(base) || base < 0) {
+      return 'Base selling price cannot be negative.';
+    }
+    if (this.form.discount_type === 'percentage') {
+      const val = Number(this.form.discount_value);
+      if (isNaN(val) || val < 0 || val > 100) {
+        return 'Percentage discount must be between 0% and 100%.';
+      }
+    } else if (this.form.discount_type === 'fixed') {
+      const val = Number(this.form.discount_value);
+      if (isNaN(val) || val < 0) {
+        return 'Fixed discount cannot be negative.';
+      }
+      if (val > base) {
+        return 'Fixed discount amount cannot exceed base price.';
+      }
+    }
+    return null;
+  }
+
+  get isPricingValid(): boolean {
+    return this.pricingErrorMessage === null;
+  }
+
+  // Backward-compatibility alias
+  get calculatedDiscountPrice(): number {
+    return this.finalSalePrice;
+
+
+
+
   }
 
   variants: FormVariantRow[] = [
@@ -754,6 +1131,8 @@ export class ProductFormComponent implements OnInit {
             name: p.name,
             slug: p.slug,
             category_id: p.category_id || null,
+            base_cost: p.base_cost != null ? Number(p.base_cost) : null,
+            profit_margin_percentage: p.profit_margin_percentage != null ? Number(p.profit_margin_percentage) : 25,
             base_price: Number(p.base_price || p.price),
             compare_at_price: p.compare_at_price ? Number(p.compare_at_price) : null,
             discount_type: p.discount_type || 'none',
@@ -885,22 +1264,42 @@ export class ProductFormComponent implements OnInit {
       skus.add(v.sku.trim().toUpperCase());
     }
 
-    if (this.form.discount_type === 'percentage') {
-      const val = Number(this.form.discount_value);
-      if (isNaN(val) || val < 0 || val > 100) {
-        this.toast.error('Percentage discount must be between 0% and 100%.');
-        return;
-      }
-    } else if (this.form.discount_type === 'fixed') {
-      const val = Number(this.form.discount_value);
-      if (isNaN(val) || val < 0 || val > Number(this.form.base_price)) {
-        this.toast.error('Fixed discount amount cannot exceed base price.');
-        return;
-      }
+    if (!this.isPricingValid) {
+      this.toast.error(this.pricingErrorMessage || 'Please correct pricing errors before publishing.');
+      return;
     }
 
     this.saving.set(true);
-    const payload = {
+    const payload: {
+      name: string;
+      slug: string;
+      category_id: number | null;
+      base_price: number;
+      price: number;
+      compare_at_price: number | null;
+      discount_type: 'none' | 'percentage' | 'fixed';
+      discount_value: number;
+      discount_price: number | null;
+      advance_payment_type: 'none' | 'thirty_percent' | 'fifty_percent' | 'full' | 'delivery_charge';
+      short_description: string | null;
+      description: string | null;
+      thumbnail_url: string | null;
+      secondary_image_url: string | null;
+      is_active: number;
+      is_featured: number;
+      variants: Array<{
+        id?: number;
+        sku: string;
+        size: string;
+        color: string;
+        price: number;
+        compare_at_price: number | null;
+        stock_quantity: number;
+        is_active: number;
+      }>;
+      base_cost?: number;
+      profit_margin_percentage?: number;
+    } = {
       name: this.form.name.trim(),
       slug: this.form.slug.trim(),
       category_id: this.form.category_id,
@@ -909,7 +1308,7 @@ export class ProductFormComponent implements OnInit {
       compare_at_price: this.form.compare_at_price ? Number(this.form.compare_at_price) : null,
       discount_type: this.form.discount_type,
       discount_value: this.form.discount_type !== 'none' ? Number(this.form.discount_value) : 0,
-      discount_price: this.form.discount_type !== 'none' ? this.calculatedDiscountPrice : null,
+      discount_price: this.form.discount_type !== 'none' ? this.finalSalePrice : null,
       advance_payment_type: this.form.advance_payment_type,
       short_description: this.form.short_description.trim() || null,
       description: this.form.description.trim() || null,
@@ -928,6 +1327,13 @@ export class ProductFormComponent implements OnInit {
         is_active: v.is_active ? 1 : 0,
       })),
     };
+
+    if (this.form.base_cost != null && !isNaN(Number(this.form.base_cost))) {
+      payload.base_cost = Number(this.form.base_cost);
+    }
+    if (this.form.profit_margin_percentage != null && !isNaN(Number(this.form.profit_margin_percentage))) {
+      payload.profit_margin_percentage = Number(this.form.profit_margin_percentage);
+    }
 
     if (this.isEditMode() && this.editingId()) {
       this.adminService.updateProduct(this.editingId()!, payload).subscribe({

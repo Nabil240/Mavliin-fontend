@@ -28,27 +28,49 @@ import { BdtCurrencyPipe } from '../../../shared/pipes/bdt.pipe';
         @let d = data()!;
         <!-- KPI Cards -->
         <div class="kpi-grid">
-          <div class="kpi-card">
+          <div class="kpi-card" data-testid="kpi-total-revenue">
             <span class="kpi-label">Total Revenue</span>
             <strong class="kpi-value tabular-price">{{ Number(d.stats.total_revenue) | bdt }}</strong>
             <span class="kpi-sub">Excluding cancelled orders</span>
           </div>
-          <div class="kpi-card">
+
+          <div class="kpi-card" data-testid="kpi-total-investment">
+            <span class="kpi-label">Total Investment</span>
+            <strong class="kpi-value tabular-price">{{ Number(d.stats.total_investment ?? d.stats.investment_amount ?? 0) | bdt }}</strong>
+            <span class="kpi-sub">Inventory base cost</span>
+          </div>
+
+          <div class="kpi-card" data-testid="kpi-realized-profit">
+            <span class="kpi-label">Realized Profit</span>
+            <strong
+              class="kpi-value tabular-price"
+              [class.text-emerald]="(d.stats.realized_profit ?? d.stats.profit ?? 0) >= 0"
+              [class.text-berry]="(d.stats.realized_profit ?? d.stats.profit ?? 0) < 0"
+            >
+              {{ Number(d.stats.realized_profit ?? d.stats.profit ?? 0) | bdt }}
+            </strong>
+            <span class="kpi-sub">Net profit from completed sales</span>
+          </div>
+
+          <div class="kpi-card" data-testid="kpi-total-orders">
             <span class="kpi-label">Total Orders</span>
             <strong class="kpi-value tabular-price">{{ d.stats.total_orders }}</strong>
             <span class="kpi-sub">{{ d.stats.pending_orders }} pending fulfillment</span>
           </div>
-          <div class="kpi-card">
+
+          <div class="kpi-card" data-testid="kpi-catalog-products">
             <span class="kpi-label">Catalog Products</span>
             <strong class="kpi-value tabular-price">{{ d.stats.total_products }}</strong>
             <span class="kpi-sub">Multi-variant active styles</span>
           </div>
-          <div class="kpi-card">
+
+          <div class="kpi-card" data-testid="kpi-registered-clients">
             <span class="kpi-label">Registered Clients</span>
             <strong class="kpi-value tabular-price">{{ d.stats.total_customers }}</strong>
             <span class="kpi-sub">Verified accounts</span>
           </div>
-          <div class="kpi-card alert">
+
+          <div class="kpi-card alert" data-testid="kpi-low-stock">
             <span class="kpi-label">Low-Stock Alerts</span>
             <strong class="kpi-value tabular-price">{{ d.stats.low_stock_count }}</strong>
             <a routerLink="/admin/inventory" class="kpi-link">Adjust Stock &rarr;</a>
@@ -199,9 +221,16 @@ import { BdtCurrencyPipe } from '../../../shared/pipes/bdt.pipe';
       gap: 0.3rem;
       &.alert { border-left: 4px solid var(--color-berry); }
       .kpi-label { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-muted); font-weight: 700; }
-      .kpi-value { font-size: 1.65rem; color: var(--color-onyx); }
+      .kpi-value {
+        font-size: 1.65rem;
+        color: var(--color-onyx);
+        &.text-emerald { color: var(--color-emerald); }
+        &.text-berry { color: var(--color-berry); }
+      }
       .kpi-sub { font-size: 0.76rem; color: var(--color-text-light); }
       .kpi-link { font-size: 0.76rem; font-weight: 700; color: var(--color-berry); }
+      .text-emerald { color: var(--color-emerald); }
+      .text-berry { color: var(--color-berry); }
     }
     .dash-grid-2 {
       display: grid;
